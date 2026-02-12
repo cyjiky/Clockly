@@ -1,8 +1,14 @@
 # LessSocial-Gym
 
-**Stack of this project includes:**
+## Stack 
+
+### Backend
 - fastAPI
 - Pydantic
+
+### Frontend
+- React Native
+- Expo
 
 <div style="display:flex; gap:10px; align-items:center;">
   <img width="40px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" />
@@ -36,3 +42,12 @@ cd ...
 ```bash
 docker compose up
 ```
+
+---
+
+<div align="center">
+
+**Made by**  
+[@cyjiky](https://github.com/cyjiky) · [@yeghor](https://github.com/yeghor)
+
+</div>
