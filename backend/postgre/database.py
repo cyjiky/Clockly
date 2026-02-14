@@ -28,7 +28,7 @@ async def get_async_engine(mode: AppRunningMode = APP_MODE) -> AsyncEngine:
 
     return engine
 
-async def get_session_depends() -> AsyncGenerator[AsyncSession]:
+async def get_session_depends() -> AsyncGenerator[AsyncSession, None]:
     session: AsyncSession = async_session()
     try:
         yield session

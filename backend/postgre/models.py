@@ -20,11 +20,13 @@ class User(Base):
     __tablename__ = "users"
 
     id = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(34))
+    username: Mapped[str] = mapped_column(String(34))
+    email: Mapped[str]
     create_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+    password_hash = Mapped[str]
 
     def __repr__(self) -> str:
-        return f'User:{self.id=}:{self.name=}'
+        return f'User:{self.id=}:{self.username=}'
 
 
 class Tasks(Base): # - названия заметок 
