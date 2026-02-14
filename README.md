@@ -1,4 +1,4 @@
-# LessSocial-Gym
+# Clockly
 
 ### Stack
 
@@ -23,19 +23,18 @@
 
 ---
 
-
 ## Run
 
 To run the application, follow these steps:
 
 **Copy the repository:**
 ```bash
-git clone https://github.com/cyjiky/LessSocial-Gym.git
+git clone https://github.com/cyjiky/Clockly.git
 ```
 
 **Move to repository directory:**
 ```bash
-cd ...
+cd Clock
 ```
 
 **Run `compose.yaml`**
