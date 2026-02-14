@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Clockly
-=======
 # Clockly 
->>>>>>> efd9966306705fd1ef537f0a2015e467ad3ebb47
 
 ### Stack
 
