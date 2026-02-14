@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from routers import *
+from postgre import initialize_models, Base
 
 app = FastAPI()
 
@@ -12,5 +13,6 @@ def hello_world() -> str:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """For Postgre model async initialization"""
+    """For async SQLalchemy models initialization"""
+    await initialize_models(Base)
 
