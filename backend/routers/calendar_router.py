@@ -28,7 +28,6 @@ def canceled_task(id: int):
 def delete_task(id: int):
     pass
 
-# отдавать значения для граффиков 
 
 # Event 
 @calendar.post("/event")
