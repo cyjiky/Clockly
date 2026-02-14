@@ -1,34 +1,48 @@
 from fastapi import FastAPI
 from fastapi import APIRouter
 
-auth = APIRouter()
+calendar = APIRouter()
 
 # Tasks
-@auth.post("/create_task")
+@calendar.post("/task")
 def new_task_create():
     pass
 
-@auth.post("/change_task")
-def update_task():
+@calendar.patch("/task/{id}")
+def update_task(id: int):
     pass
 
-@auth.post("/delete_task")
-def delete_task():
+@calendar.post("/task/delete/{id}")
+def delete_task(id: int):
     pass
 
-@auth.post("/delete_task")
-def delete_task():
+@calendar.post("/task/completed/{id}")
+def completed_task(id: int):
+    pass 
+
+@calendar.post("/task/canceled/{id}")
+def canceled_task(id: int):
     pass
+
+@calendar.delete("/task/delete/{id}")
+def delete_task(id: int):
+    pass
+
+# отдавать значения для граффиков 
 
 # Event 
-@auth.post("/create_event")
+@calendar.post("/event")
 def create_event():
     pass 
 
-@auth.post("/change_event")
-def change_event():
+@calendar.patch("/event/{id}")
+def change_event(id: int):
     pass 
 
-@auth.post("/delete_event")
-def delete_event():
+@calendar.post("event/unfulfilled/{id}")
+def unfulfilled_event(id: int):
+    pass
+
+@calendar.delete("/event/delete/{id}")
+def delete_event(id: int):
     pass 
