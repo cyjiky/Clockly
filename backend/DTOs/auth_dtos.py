@@ -18,3 +18,7 @@ class JWTsResponse(BaseModel):
     refresh_token: str
     refresh_token_expiry: datetime
 
+class JWTPayload(BaseModel):
+    user_id: str
+    issued_at: datetime
+    expires_at: datetime
