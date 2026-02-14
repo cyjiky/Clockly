@@ -16,3 +16,6 @@ async def lifespan(app: FastAPI):
     """For async SQLalchemy models initialization"""
     await initialize_models(Base)
 
+app.include_router(auth)
+app.include_router(calendar)
+app.include_router(chart)

@@ -1,20 +1,29 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .redis_service.redis_service import RedisService
+from .postgre_service.postgre_service import PostgreService
 
-class CoreServiceBase:
+from typing import TypeVar, Generic
+
+
+class CoreServiceBase():
     """
     To create 
     """
-    def __init__(self):
-        return self
+    def __init__(self, RedisServiceInstance: RedisService, PostgreServiceInstance: PostgreService):
+        self._RedisService = RedisServiceInstance
+        self._PostgreService = PostgreServiceInstance
 
     @classmethod
-    async def create(cls, sqlalchemy_session: AsyncSession) -> CoreServiceBase:
-        pass
+    async def create(cls, sqlalchemy_session: AsyncSession):
+        RedisServiceInstance = RedisService()
+        PostgreServiceInstance = PostgreService()
+
+        return cls(RedisServiceInstance, PostgreServiceInstance)
 
     async def close(self) -> None:
-        pass
+        await self._PostgreService.close()
 
 # Planned to use in shortly future
 # class CoreServiceCreationContextManager:
