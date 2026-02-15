@@ -18,7 +18,7 @@ class CoreServiceBase():
     @classmethod
     async def create(cls, sqlalchemy_session: AsyncSession):
         RedisServiceInstance = RedisService()
-        PostgreServiceInstance = PostgreService()
+        PostgreServiceInstance = PostgreService(sqlalchemy_session)
 
         return cls(RedisServiceInstance, PostgreServiceInstance)
 
