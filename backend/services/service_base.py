@@ -22,8 +22,9 @@ class CoreServiceBase():
 
         return cls(RedisServiceInstance, PostgreServiceInstance)
 
-    async def close(self) -> None:
-        await self._PostgreService.close()
+    async def close(self, commit: bool) -> None:
+        if commit:
+            await self._PostgreService.commit()
 
 # Planned to use in shortly future
 # class CoreServiceCreationContextManager:
