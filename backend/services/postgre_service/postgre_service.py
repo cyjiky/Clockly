@@ -18,6 +18,7 @@ class PostgreService():
         await self.__sesion.flush()
 
     async def flush_models(self, *models: Base) -> None:
+        """Adds *models: Base to the session and flushes them"""
         self.__sesion.add_all(models)
         await self.flush()
 

@@ -20,6 +20,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[str]
     username: Mapped[str] = mapped_column(String(34))
     email: Mapped[str]
     create_date: Mapped[datetime] = mapped_column(insert_default=func.now())
@@ -33,6 +34,7 @@ class Tasks(Base): # - названия заметок
     __tablename__ = "task"
 
     id = mapped_column(Integer, primary_key=True)
+    task_id: Mapped[str]
     task_name: Mapped[str]
     additional_description: Mapped[Optional[str]]
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
@@ -50,6 +52,7 @@ class Events(Base): # - задачи (к заметкам дополнитель
     __tablename__ = "event"
 
     id = mapped_column(Integer, primary_key=True)
+    event_id: Mapped[str]
     event_name: Mapped[str]
     additional_description: Mapped[str]
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
