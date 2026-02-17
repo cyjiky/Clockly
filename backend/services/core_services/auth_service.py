@@ -20,38 +20,38 @@ class AuthService(CoreServiceBase):
     async def login(self, creds: LoginBody) -> JWTsResponse:
         pass
 
-    async def register(self, credentials: RegisterBody) -> JWTsResponse:
-        if not validate_email(credentials.email):
+    async def register(self, creds: RegisterBody) -> JWTsResponse:
+        if not validate_email(creds.email):
             raise HTTPException(
                 status_code=400,
                 detail="Invalid email provided"
             )
-        if not validate_password(credentials.password):
+        if not validate_password(creds.password):
             raise HTTPException(
                 status_code=400,
                 detail="Password isn't secure enough."
                 "At least one uppercase letter and number!"
             )
 
-        if await self._PostgreService.get_user_by_username(username=credentials.username):
+        if await self._PostgreService.get_user_by_username(username=creds.username):
             # code 409 - collision, such instance already exists
             raise HTTPException(
                 status_code=409,
-                detail="User with this email already exist."
+                detail="User with this email already exists."
             )
-        if await self._PostgreService.get_user_by_email(email=credentials.email):
+        if await self._PostgreService.get_user_by_email(email=creds.email):
             raise HTTPException(
                 status_code=409,
                 detail="This email is already used."
             )
 
-        password_hash = hash_password(credentials.password)
+        password_hash = hash_password(creds.password)
 
         new_user_id = uuid4()
         new_user = User(
             user_id=uuid4(),
-            username=credentials.username,
-            email=credentials.email,
+            username=creds.username,
+            email=creds.email,
             password_hash=password_hash
         )
 
