@@ -35,7 +35,8 @@ class Tasks(Base): # - названия заметок
     id = mapped_column(Integer, primary_key=True)
     task_name: Mapped[str]
     additional_description: Mapped[Optional[str]]
-    create_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+    start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+    end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
 
     name_fk: Mapped[int] = mapped_column(ForeignKey('event.id'))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
@@ -51,7 +52,8 @@ class Events(Base): # - задачи (к заметкам дополнитель
     id = mapped_column(Integer, primary_key=True)
     event_name: Mapped[str]
     additional_description: Mapped[str]
-    create_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+    start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+    end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
 
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     events: Mapped["Tasks"] = relationship(back_populates="tasks")
