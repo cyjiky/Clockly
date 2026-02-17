@@ -17,6 +17,7 @@ class PostgreService():
         await self.__sesion.flush()
 
     async def flush_models(self, *models: Base) -> None:
+        """Adds *models: Base to the session and flushes them"""
         self.__sesion.add_all(models)
         await self.flush()
 
@@ -28,3 +29,7 @@ class PostgreService():
 
     async def get_user_by_email(self, email: str) -> User | None:
         pass
+
+    # Юзера по его юзернейму
+    # Все события юзера - все / на сегодня
+    # Все задания юзера - все / на сегодня

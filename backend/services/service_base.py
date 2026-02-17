@@ -8,19 +8,16 @@ from typing import TypeVar, Generic
 
 
 class CoreServiceBase():
-    """
-    To create 
-    """
-    def __init__(self, RedisServiceInstance: RedisService, PostgreServiceInstance: PostgreService):
-        self._RedisService = RedisServiceInstance
+    def __init__(self, PostgreServiceInstance: PostgreService):
         self._PostgreService = PostgreServiceInstance
+
 
     @classmethod
     async def create(cls, sqlalchemy_session: AsyncSession):
-        RedisServiceInstance = RedisService()
         PostgreServiceInstance = PostgreService(sqlalchemy_session)
 
-        return cls(RedisServiceInstance, PostgreServiceInstance)
+        return cls(PostgreServiceInstance)
+
 
     async def close(self, commit: bool) -> None:
         if commit:
