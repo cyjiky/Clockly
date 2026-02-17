@@ -21,16 +21,29 @@ class AuthService(CoreServiceBase):
         pass
 
     async def register(self, credentials: RegisterBody) -> JWTsResponse:
-        if not validate_email:
-            raise HTTPException(status_code=400, detail="Invalid email provided")
-        if not validate_password:
-            raise HTTPException(status_code=400, detail="Password isn't secure enough. At least one uppercase letter and number!")
+        if not validate_email(credentials.email):
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid email provided"
+            )
+        if not validate_password(credentials.password):
+            raise HTTPException(
+                status_code=400,
+                detail="Password isn't secure enough."
+                "At least one uppercase letter and number!"
+            )
 
         if await self._PostgreService.get_user_by_username(username=credentials.username):
             # code 409 - collision, such instance already exists
-            raise HTTPException(status_code=409, detail="User with this email already exist.")
+            raise HTTPException(
+                status_code=409,
+                detail="User with this email already exist."
+            )
         if await self._PostgreService.get_user_by_email(email=credentials.email):
-            raise HTTPException(status_code=409, detail="This email is already used.")
+            raise HTTPException(
+                status_code=409,
+                detail="This email is already used."
+            )
 
         password_hash = hash_password(credentials.password)
 
@@ -45,14 +58,18 @@ class AuthService(CoreServiceBase):
         await self._PostgreService.flush_models(new_user)
 
         # TODO: Take this logic to another function for reusing purposes
-        access_jwt_expiry = datetime.now() + datetime.timedelta(seconds=ACCESS_JWT_EXPIRY_SECONDS)
+        access_jwt_expiry = datetime.now() + datetime.timedelta(
+            seconds=ACCESS_JWT_EXPIRY_SECONDS
+        )
         access_jwt_payload = JWTPayload(
             user_id=new_user_id,
             issued_at=datetime.now(),
             expires_at=access_jwt_expiry
         )
 
-        refresh_jwt_expiry = datetime.now() + datetime.timedelta(seconds=REFRESH_JWT_EXPIRY_SECONDS)
+        refresh_jwt_expiry = datetime.now() + datetime.timedelta(
+            seconds=REFRESH_JWT_EXPIRY_SECONDS
+        )
         refresh_jwt_payload = JWTPayload(
             user_id=new_user_id,
             issued_at=datetime.now(),
@@ -70,7 +87,10 @@ class AuthService(CoreServiceBase):
         )
 
     async def logout(self):
-        raise Exception("Not implemented yet! This method would work, if the application could store tokens and deactive them.")
+        raise Exception(
+            "Not implemented yet! This method would work,"
+            "if the application could store tokens and deactive them."
+        )
     
     async def change_username(self):
         pass
