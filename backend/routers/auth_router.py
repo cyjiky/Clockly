@@ -14,7 +14,7 @@ async def login(
 ) -> JWTsResponse:
     exception_occured = False
     try:
-        auth_service: AuthService = await AuthService[AuthService].create(postgre_session)
+        auth_service: AuthService = await AuthService.create(postgre_session)
         return await auth_service.register(login_creds)
     except Exception as e:
         exception_occured = True
@@ -30,8 +30,9 @@ async def register(
     postgre_session: AsyncSession = Depends(get_session_depends)
 ) -> JWTsResponse:
     exception_occured = False
+
     try:
-        auth_service: AuthService = await AuthService[AuthService].create(postgre_session)
+        auth_service: AuthService = await AuthService.create(postgre_session)
         return await auth_service.register(register_creds)
     except Exception as e:
         exception_occured = True

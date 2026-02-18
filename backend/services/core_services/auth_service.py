@@ -89,7 +89,6 @@ class AuthService(CoreServiceBase):
             )
 
         password_hash = hash_password(creds.password)
-
         new_user_id = uuid4()
         new_user = User(
             user_id=new_user_id,

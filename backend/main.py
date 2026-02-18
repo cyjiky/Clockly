@@ -1,22 +1,34 @@
 from fastapi import FastAPI
+import uvicorn
+
 from contextlib import asynccontextmanager
 
 from routers import *
-from postgre import *
+from postgre import initialize_models, get_async_engine, Base
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """For async SQLalchemy models initialization"""
+    print("Getting async engine")
+    engine = await get_async_engine()
+    print(f"Got async engine: {type(engine)}")
+    print("Initializing models")
+    print(type(Base))
+    await initialize_models(Base, engine=engine)
+    print("Models initialized")
+
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 app.get("/")
 def hello_world() -> str:
     return "Hello World!"
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """For async SQLalchemy models initialization"""
-    engine = await get_async_engine()
-    await initialize_models(Base, engine=engine)
-
 app.include_router(auth)
 app.include_router(calendar)
 app.include_router(chart)
+
+# For debugging
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8000)
