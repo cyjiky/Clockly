@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import select 
+from sqlalchemy import select 
 from postgre import Base, User, Tasks, Events
 from datetime import datetime, time
 

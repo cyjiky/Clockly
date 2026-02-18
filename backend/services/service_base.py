@@ -1,7 +1,7 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .redis_service.redis_service import RedisService
+# from .redis_service.redis_service import RedisService
 from .postgre_service.postgre_service import PostgreService
 
 from typing import TypeVar, Generic
