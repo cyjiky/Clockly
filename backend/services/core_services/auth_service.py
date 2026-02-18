@@ -46,11 +46,6 @@ class AuthService(CoreServiceBase):
             )
 
         password_hash = hash_password(creds.password)
-<<<<<<< HEAD
-
-=======
-        print(password_hash, type(password_hash))
->>>>>>> cabf9c9 (fix: application startup, models relationships. Models doesn't initializing correctly yet)
         new_user_id = uuid4()
         new_user = User(
             user_id=uuid4(),

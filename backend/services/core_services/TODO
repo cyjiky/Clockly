@@ -1,0 +1,6 @@
+Валидация полей creds
+Хеш пароля
+Cоздание юзера User(...аргументы/поля)
+Вызов функции flush_models(model=user) в self._PostgreService
+
+https://metanit.com/python/tutorial/7.1.php
