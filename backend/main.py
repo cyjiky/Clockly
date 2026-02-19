@@ -4,17 +4,19 @@ import uvicorn
 from contextlib import asynccontextmanager
 
 from routers import *
-from postgre import initialize_models, get_async_engine, Base
+from postgre import initialize_models, get_async_engine, Base, engine
+
+engine = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """For async SQLalchemy models initialization"""
+    await get_async_engine()
     print("Getting async engine")
-    engine = await get_async_engine()
     print(f"Got async engine: {type(engine)}")
     print("Initializing models")
     print(type(Base))
-    await initialize_models(Base, engine=engine)
+    await initialize_models(Base)
     print("Models initialized")
 
     yield

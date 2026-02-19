@@ -21,7 +21,6 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = "users"
 
-    id = mapped_column(Integer, primary_key=True)
     user_id: Mapped[str] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(34))
     email: Mapped[str]
@@ -38,7 +37,6 @@ class User(Base):
 class Tasks(Base): # - названия заметок 
     __tablename__ = "tasks"
 
-    id = mapped_column(Integer, primary_key=True)
     task_id: Mapped[str] = mapped_column(primary_key=True)
     task_name: Mapped[str]
     additional_description: Mapped[Optional[str]]
@@ -55,7 +53,6 @@ class Tasks(Base): # - названия заметок
 class Events(Base): # - задачи (к заметкам дополнительно)
     __tablename__ = "events"
 
-    id = mapped_column(Integer, primary_key=True)
     event_id: Mapped[str] = mapped_column(primary_key=True)
     event_name: Mapped[str]
     additional_description: Mapped[str]

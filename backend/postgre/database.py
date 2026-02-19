@@ -12,6 +12,8 @@ load_dotenv()
 
 APP_MODE = os.getenv("APP_MODE")
 
+engine: AsyncEngine | None = None
+
 async def get_async_engine(mode: AppRunningMode = APP_MODE) -> AsyncEngine:
     username = os.getenv("POSTGRE_PROD_USERNAME" if mode == "prod" else "POSTGRE_TEST_USERNAME")
     password = os.getenv("POSTGRE_PROD_PASSWORD" if mode == "prod" else "POSTGRE_TEST_PASSWORD")
@@ -20,16 +22,19 @@ async def get_async_engine(mode: AppRunningMode = APP_MODE) -> AsyncEngine:
     port = os.getenv("POSTGRE_PROD_PORT" if mode == "prod" else "POSTGRE_TEST_PORT")
     
     url = f"postgresql+asyncpg://{username}:{password}@{host}:{port}/{database}"
-    engine = create_async_engine(url, echo=True)
+    engine_local = create_async_engine(url, echo=True)
 
-    return engine
+    global engine
 
-async def get_async_sessionmaker(engine: AsyncEngine):
+    engine = engine_local
+    print("Initialized engine")
+
+
+async def get_async_sessionmaker():
     return async_sessionmaker[AsyncSession](bind=engine, autoflush=False)
 
 async def get_session_depends() -> AsyncGenerator[AsyncSession, None]:
-    engine = await get_async_engine()
-    ready_sessionmaker = await get_async_sessionmaker(engine=engine)
+    ready_sessionmaker = await get_async_sessionmaker()
     session = ready_sessionmaker()
 
     try:
@@ -37,6 +42,7 @@ async def get_session_depends() -> AsyncGenerator[AsyncSession, None]:
     finally:
         await session.aclose()
 
-async def initialize_models(Base: DeclarativeBase, engine: AsyncEngine) -> None:
+
+async def initialize_models(Base: DeclarativeBase) -> None:
     async with engine.connect() as conn:
-        conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(Base.metadata.create_all)
