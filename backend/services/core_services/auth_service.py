@@ -8,7 +8,7 @@ from os import getenv
 from DTOs import LoginBody, RegisterBody, JWTPayload, JWTsResponse
 from auth import *
 from services import CoreServiceBase
-from utils import validate_email, validate_password, potential_user
+from utils import validate_email, validate_password
 from postgre import User
 
 load_dotenv()
