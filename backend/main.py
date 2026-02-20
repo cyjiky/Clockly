@@ -1,22 +1,22 @@
 from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import AsyncEngine
 import uvicorn
 
 from contextlib import asynccontextmanager
 
 from routers import *
-from postgre import initialize_models, get_async_engine, Base, engine
+from postgre import initialize_models, get_async_engine, Base
 
-engine = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """For async SQLalchemy models initialization"""
-    await get_async_engine()
-    print("Getting async engine")
+    engine = await get_async_engine()
     print(f"Got async engine: {type(engine)}")
     print("Initializing models")
     print(type(Base))
-    await initialize_models(Base)
+    await initialize_models(Base, engine)
     print("Models initialized")
 
     yield
