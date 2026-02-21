@@ -1,7 +1,11 @@
-from fastapi import FastAPI
 from fastapi import APIRouter
 
 calendar = APIRouter()
+
+# Tasks
+@calendar.get("/task/summary/{id}")
+def summary_task(start_time: str, end_time: str):
+    pass 
 
 # Tasks
 @calendar.post("/task")
