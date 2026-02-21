@@ -89,7 +89,7 @@ class AuthService(CoreServiceBase):
             )
 
         password_hash = hash_password(creds.password)
-        new_user_id = uuid4()
+        new_user_id = str(uuid4())
         new_user = User(
             user_id=new_user_id,
             username=creds.username,
@@ -98,6 +98,8 @@ class AuthService(CoreServiceBase):
         )
 
         await self._PostgreService.flush_models(new_user)
+
+        return self.generate_auth_tokens(new_user_id=new_user_id)
 
     async def logout(self):
         raise Exception(
