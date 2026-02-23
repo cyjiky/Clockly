@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select 
-from postgre import Base, User, Tasks, Events
+from postgre.models import *
 from datetime import datetime, time
 
 from typing import TypeVar, List
@@ -98,6 +98,8 @@ class PostgreService():
         )
         return res.scalars().all()
 
+    async def get_user_initial_calendar(self, user_id: str) -> Calendars | None:
+        pass
 
 
 
