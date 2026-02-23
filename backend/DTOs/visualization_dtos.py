@@ -6,6 +6,32 @@ from datetime import datetime
 from typing import Optional, List, TypeVar, Generic, Dict, Literal
 from ctypes import c_double
 
+"""
+Module for visualization data transfer objects (DTOs).
+This module defines Pydantic models for serializing and validating visualization data,
+including time-based visualizations (line charts, pie charts) and heatmaps for tasks and events.
+Classes:
+    TimeRangeBase: Base model for time range with start/end times, score, and optional color.
+    ModelId: Simple DTO for model identification.
+    TaskNames: DTO for task name representation.
+    EventsNames: DTO for event name representation.
+    LocationLine: DTO for horizontal location indexing (x-axis).
+    PieSpaceOcupation: DTO for pie chart space percentage.
+    VisualizationBase: Base class for visualization schemes.
+    VisualizationInstanceBase: Base class for visualization data instances.
+    TaskVisualizationLineChartInstance: Combines task metadata with line chart instance data.
+    EventVisualizationLineChartInstance: Combines event metadata with line chart instance data.
+    TaskVisualizationPieInstance: Combines task metadata with pie chart instance data.
+    EventVisualizationPieInstance: Combines event metadata with pie chart instance data.
+    LineChartTasksScheme: Schema for task-based line chart visualizations.
+    PieChartTasksScheme: Schema for task-based pie chart visualizations.
+    LineChartEventsScheme: Schema for event-based line chart visualizations.
+    PieChartEventsScheme: Schema for event-based pie chart visualizations.
+    LineChartScheme: Generic schema for line chart visualizations with type validation.
+    HeatMapScheme: Schema for heatmap data supporting tasks, events, or both.
+    EventTrends: DTO for representing event trends with names and frequency data.
+"""
+
 S = TypeVar("S", bound=VisualizationBase)
 
 class TimeRangeBase(BaseModel):
