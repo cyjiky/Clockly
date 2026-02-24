@@ -36,4 +36,3 @@
 #             pattern = f"{self.__jwt_access_prefix}{jwt}"
 
 #         return self.__redis.get(pattern)
-    

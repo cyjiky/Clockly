@@ -1,6 +1,7 @@
-/__pycache__
-/venv
-.venv/
+__pycache__/
+venv/
 env/
 **/TODO 
 creds/
+*.pyc
+clockly_backend.egg-info/

@@ -8,7 +8,6 @@ from routers import *
 from postgre import initialize_models, get_async_engine, Base
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """For async SQLalchemy models initialization"""
@@ -21,11 +20,15 @@ async def lifespan(app: FastAPI):
 
     yield
 
+
 app = FastAPI(lifespan=lifespan)
 
 app.get("/")
+
+
 def hello_world() -> str:
     return "Hello World!"
+
 
 app.include_router(auth)
 app.include_router(calendar)

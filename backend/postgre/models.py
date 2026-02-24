@@ -15,8 +15,10 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
+
 class Base(DeclarativeBase):
-    pass 
+    pass
+
 
 class User(Base):
     __tablename__ = "users"
@@ -32,10 +34,10 @@ class User(Base):
     calendars: Mapped[List[Calendars]] = relationship()
 
     def __repr__(self) -> str:
-        return f'User:{self.id=}:{self.username=}'
+        return f"User:{self.id=}:{self.username=}"
 
 
-class Tasks(Base): # - названия заметок 
+class Tasks(Base):  # - названия заметок
     __tablename__ = "tasks"
 
     task_id: Mapped[str] = mapped_column(primary_key=True)
@@ -44,14 +46,16 @@ class Tasks(Base): # - названия заметок
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
 
-    user_id: Mapped[str] = mapped_column(ForeignKey('users.user_id'))
-    calendar_id: Mapped[str] = mapped_column(ForeignKey("calendars.calendar_id"))
-    
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    calendar_id: Mapped[str] = mapped_column(
+        ForeignKey("calendars.calendar_id")
+    )
+
     def __repr__(self) -> str:
-        return f'Tasks:{self.id}:{self.task_name}'    
+        return f"Tasks:{self.id}:{self.task_name}"
 
 
-class Events(Base): # - задачи (к заметкам дополнительно)
+class Events(Base):  # - задачи (к заметкам дополнительно)
     __tablename__ = "events"
 
     event_id: Mapped[str] = mapped_column(primary_key=True)
@@ -60,12 +64,15 @@ class Events(Base): # - задачи (к заметкам дополнитель
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
 
-    user_id: Mapped[str] = mapped_column(ForeignKey('users.user_id'))
-    calendar_id: Mapped[str] = mapped_column(ForeignKey("calendars.calendar_id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    calendar_id: Mapped[str] = mapped_column(
+        ForeignKey("calendars.calendar_id")
+    )
 
     def __repr__(self) -> str:
-        return f'Events:{self.id}:{self.event_name}'
-    
+        return f"Events:{self.id}:{self.event_name}"
+
+
 class Calendars(Base):
     __tablename__ = "calendars"
 
@@ -76,6 +83,6 @@ class Calendars(Base):
     # Must be setted to True only in registration case
     # If is_initial set to True, this calendar shouldn't be deleted
     is_initial: Mapped[bool] = mapped_column(default=False)
-    
+
     events: Mapped[List[Events]] = relationship()
     tasks = Mapped[List[Tasks]] = relationship()
