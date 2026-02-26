@@ -1,4 +1,6 @@
 from fastapi import APIRouter
+from app_types import *
+import datetime
 
 calendar = APIRouter()
 
@@ -49,3 +51,10 @@ def unfulfilled_event(id: int):
 @calendar.delete("/event/delete/{id}")
 def delete_event(id: int):
     pass 
+
+@calendar.get("/history")
+def history_tasks_or_event(
+    type: BothTaskEventEnum, 
+    start_time: datetime,
+    end_time: datetime
+): pass
