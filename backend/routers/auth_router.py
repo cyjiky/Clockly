@@ -7,10 +7,11 @@ from DTOs import LoginBody, RegisterBody, JWTsResponse
 
 auth = APIRouter()
 
+
 @auth.post("/login")
 async def login(
     login_creds: LoginBody,
-    postgre_session: AsyncSession = Depends(get_session_depends)
+    postgre_session: AsyncSession = Depends(get_session_depends),
 ) -> JWTsResponse:
     exception_occured = False
     try:
@@ -27,7 +28,7 @@ async def login(
 @auth.post("/register")
 async def register(
     register_creds: RegisterBody,
-    postgre_session: AsyncSession = Depends(get_session_depends)
+    postgre_session: AsyncSession = Depends(get_session_depends),
 ) -> JWTsResponse:
     exception_occured = False
 

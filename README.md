@@ -34,12 +34,62 @@ git clone https://github.com/cyjiky/Clockly.git
 
 **Move to repository directory:**
 ```bash
-cd Clock
+cd Clockly
 ```
+
+### Using Docker Compose
 
 **Run `compose.yaml`**
 ```bash
 docker compose up
+```
+
+### Manually
+
+#### Backend
+
+Move to backend application directory
+```bash
+cd backend
+```
+
+Create virtual envronment (recommended):
+```bash
+python -m venv ./venv
+./venv/Scripts/activate
+```
+
+Install the dependencies
+```bash
+pip install -e .
+```
+
+Setup PgAdmin with credentials specified in `.env` or run docker postgre image:
+```bash
+docker run --name clockly_postgres_container -e POSTGRES_USER=[USER] -e POSTGRES_PASSWORD=[PASSWORD] -e POSTGRES_DB=[DATABASE] -p 5432:5432 -d clockly-backend-postgres
+``` 
+
+
+Run the app
+```bash
+uvicorn main:app --reload
+```
+
+#### Frontend
+
+Move to the repository root directory and then navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+Install the dependendies:
+```bash
+npm i # or yarn install
+```
+
+Start the application via expo
+```bash
+npx expo start # or yarn expo start
 ```
 
 ---
