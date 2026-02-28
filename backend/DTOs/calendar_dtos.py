@@ -54,6 +54,6 @@ class DAY(BaseModel):
 
 
 class DBJDATA(BaseModel):
-    month: int
+    month: int 
     year: int
     data: List[DAY]
