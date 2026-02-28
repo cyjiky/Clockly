@@ -2,10 +2,12 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 
+
 class CalendarScheme(BaseModel):
     calendar_id: str
     name: str
     color: str
+
 
 class TaskScheme(BaseModel):
     name: str
@@ -30,3 +32,28 @@ class EventScheme(BaseModel):
 
     # repeat_days: List[str] = []
     # repeat_time: List[datetime] = []
+
+
+class BothScheme(BaseModel):
+    Events: List[EventScheme] = None
+    Tasks: List[TaskScheme] = None
+
+
+class SPECIAL_EVENT(BaseModel):
+    name: str
+    description: Optional[str] = None
+    date: datetime
+    calendar_id: Optional[str]
+
+
+class DAY(BaseModel):
+    # month: int
+    day_of_week: str
+    special_events: List[SPECIAL_EVENT] = []
+    OBJ: BothScheme
+
+
+class DBJDATA(BaseModel):
+    month: int
+    year: int
+    data: List[DAY]
