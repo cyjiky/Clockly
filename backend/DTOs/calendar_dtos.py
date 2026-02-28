@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
@@ -15,9 +15,14 @@ class TaskScheme(BaseModel):
 
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    calendar_id: Optional[
+    calendar: Optional[
         str
     ]  # If None, will be assigned to user's initial Calendar
+
+
+class TaskSchemeOut(TaskScheme):
+    completed: bool
+    calendar: CalendarScheme
 
 
 class EventScheme(BaseModel):
@@ -26,7 +31,7 @@ class EventScheme(BaseModel):
 
     start_date: datetime
     end_date: Optional[datetime] = None
-    calendar_id: Optional[
+    calendar: Optional[
         str
     ]  # If None, will be assigned to user's initial Calendar
 
@@ -34,26 +39,30 @@ class EventScheme(BaseModel):
     # repeat_time: List[datetime] = []
 
 
+class EventSchemeOut(EventScheme):
+    calendar: CalendarScheme
+
+
 class BothScheme(BaseModel):
-    Events: List[EventScheme] = None
-    Tasks: List[TaskScheme] = None
+    events: List[EventSchemeOut] = Field(default=[])
+    tasks: List[TaskSchemeOut] = Field(default=[])
 
 
 class SpecialEventScheme(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: Optional[str] = Field(default=None)
     date: datetime
-    calendar_id: Optional[str]
+    color: str
 
 
 class DayScheme(BaseModel):
     # month: int
-    day_of_week: str
-    special_events: List[SpecialEventScheme] = []
-    OBJ: BothScheme
+    day_of_week_readable: str
+    special_events: List[SpecialEventScheme] = Field(default=[])
+    objects: BothScheme
 
 
-class DbjDataScheme(BaseModel):
+class ObjectsMonthDataScheme(BaseModel):
     month: int
     year: int
     data: List[DayScheme]

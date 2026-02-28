@@ -118,7 +118,6 @@ class PostgreService:
                 Events.start_date >= start_date,
                 Events.start_date <= end_date,
             )
-            .order_by(Events.start_date)
         )
 
         stmt2 = (
@@ -128,7 +127,6 @@ class PostgreService:
                 Tasks.start_date >= start_date,
                 Tasks.start_date <= end_date,
             )
-            .order_by(Events.start_date)
         )
 
         union_stmt = union_all(stmt1, stmt2)
