@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from postgre.models import *
+from app_types import BothTaskEventEnum, TimeLineEnum
 from datetime import datetime, time
 
 from typing import TypeVar, List

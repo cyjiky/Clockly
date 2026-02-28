@@ -4,18 +4,25 @@ from enum import Enum, unique
 type AppRunningMode = Literal["prod", "test"]
 type TypeJWT = Literal["access", "refresh"]
 
+import typing
+import datetime
+
 @unique
 class TimeLineEnum(Enum):
-    DAY = "DAY"
-    THREE_DAYS = "THREE_DAYS"
-    WEEK = "WEEK"
-    MONTH = "MONTH"
+    DAY = datetime.timedelta(days=1)
+    THREE_DAYS = datetime.timedelta(days=3)
+    WEEK = datetime.timedelta(weeks=1)
+    
+    # We need to manually calculate end of current month
+    # Because amount of days in months can range from 28 up to 31
+    MONTH = None
 
 @unique
 class EventEnum(Enum):
     TASK_CREATED = "TASK_CREATED"
     TASK_UPDATED = "TASK_UPDATED"
     TASK_DELETED = "TASK_DELETED"
+
 
 @unique
 class TaskEnum(Enum):
@@ -24,10 +31,12 @@ class TaskEnum(Enum):
     DONE = "DONE"
     ARCHIVED = "ARCHIVED"
 
+
 class BothTaskEventEnum(Enum):
     TASK = "TASK"
     EVENT = "EVENT"
     BOTH = "BOTH"
+
 
 @unique
 class UserStatusEnum(Enum):
