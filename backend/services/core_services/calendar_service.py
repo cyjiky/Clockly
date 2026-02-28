@@ -5,7 +5,7 @@ from uuid import uuid4
 from DTOs import *  # Optional
 from services import CoreServiceBase
 from postgre import Tasks, Events
-
+from app_types import TimeLineEnum, BothTaskEventEnum
 
 class CalendarService(CoreServiceBase):
     async def _define_calendar_id(
@@ -69,5 +69,14 @@ class CalendarService(CoreServiceBase):
     async def change_event():
         pass
 
-    async def get_by_range():
-        pass
+    async def get_by_range(self, user_id: str, timerange: TimeLineEnum):
+        objects = await self._PostgreService.get_by_range(
+            user_id=user_id,
+            curr_datetime=datetime.now(),
+            timerange=timerange
+        )
+
+        mapped_objects = ...
+
+        return mapped_objects
+    

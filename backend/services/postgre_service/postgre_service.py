@@ -1,8 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, union_all
 from postgre.models import *
 from app_types import BothTaskEventEnum, TimeLineEnum
-from datetime import datetime, time
+from datetime import datetime, time, _Date
+from utils import map_nearest_range
 
 from typing import TypeVar, List
 
@@ -102,6 +103,41 @@ class PostgreService:
         self, user_id: str
     ) -> Calendars | None:
         pass
+
+    async def get_by_range(
+        self, user_id: str, curr_datetime: datetime, timerange: TimeLineEnum
+    ) -> List[Events | Tasks]:
+        start_date, end_date = map_nearest_range(
+            curr_date=curr_datetime, timerange=timerange
+        )
+
+        stmt1 = (
+            select(Events)
+            .where(
+                Events.user_id == user_id,
+                Events.start_date >= start_date,
+                Events.start_date <= end_date,
+            )
+            .order_by(Events.start_date)
+        )
+
+        stmt2 = (
+            select(Tasks)
+            .where(
+                Tasks.user_id == user_id,
+                Tasks.start_date >= start_date,
+                Tasks.start_date <= end_date,
+            )
+            .order_by(Events.start_date)
+        )
+
+        union_stmt = union_all(stmt1, stmt2)
+
+        result = await self.__sesion.execute(
+            select(union_stmt)
+        )
+
+        return result.scalars().all()
 
 
 # Юзера по его юзернейму
