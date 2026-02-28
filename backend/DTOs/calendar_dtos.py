@@ -39,21 +39,21 @@ class BothScheme(BaseModel):
     Tasks: List[TaskScheme] = None
 
 
-class SPECIAL_EVENT(BaseModel):
+class SpecialEventScheme(BaseModel):
     name: str
     description: Optional[str] = None
     date: datetime
     calendar_id: Optional[str]
 
 
-class DAY(BaseModel):
+class DayScheme(BaseModel):
     # month: int
     day_of_week: str
-    special_events: List[SPECIAL_EVENT] = []
+    special_events: List[SpecialEventScheme] = []
     OBJ: BothScheme
 
 
-class DBJDATA(BaseModel):
-    month: int 
+class DbjDataScheme(BaseModel):
+    month: int
     year: int
-    data: List[DAY]
+    data: List[DayScheme]
