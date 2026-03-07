@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, model_validator, Field
+from pydantic import BaseModel, model_validator, Field, ConfigDict
 from pydantic.generics import GenericModel
 from datetime import datetime
-from typing import Optional, List, TypeVar, Generic, Dict, Literal
+from typing import Optional, List, TypeVar, Generic, Literal
 from ctypes import c_double
 
 """
@@ -32,13 +32,13 @@ Classes:
     EventTrends: DTO for representing event trends with names and frequency data.
 """
 
-S = TypeVar("S", bound=VisualizationBase)
+S = TypeVar("S", bound="VisualizationBase")
 
 
 class TimeRangeBase(BaseModel):
     start_time: datetime
     end_time: datetime
-    score: c_double
+    score: float
     color: Optional[str] = Field(default="#3498db")
 
     @model_validator(mode="after")
@@ -68,7 +68,9 @@ class PieSpaceOcupation(BaseModel):
     space_percentage: str
 
 
-class VisualizationBase:
+class VisualizationBase(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     visualization_name: str
     data_instances: List[VisualizationInstanceBase]
 
@@ -167,4 +169,4 @@ class HeatMapScheme(BaseModel):
 
 class EventTrends(BaseModel):
     # Represents trend event name and frequency
-    trends: List[str, int]
+    trends: List[str | int]

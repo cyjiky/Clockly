@@ -66,3 +66,8 @@ class ObjectsMonthDataScheme(BaseModel):
     month: int
     year: int
     data: List[DayScheme]
+
+
+class RangeBody(BaseModel):
+    start_time: datetime
+    end_time: datetime

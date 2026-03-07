@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app_types import *
-import datetime
+from DTOs import RangeBody
 
 calendar = APIRouter()
 
@@ -65,6 +65,6 @@ def delete_event(id: int):
 @calendar.get("/history")
 def history_tasks_or_event(
     type: BothTaskEventEnum, 
-    start_time: datetime,
-    end_time: datetime
-): pass
+    range: RangeBody
+):
+    pass

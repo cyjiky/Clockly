@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, union_all
 from postgre.models import *
 from app_types import BothTaskEventEnum, TimeLineEnum
-from datetime import datetime, time, _Date
+from datetime import datetime, time
 from utils import map_nearest_range
 
 from typing import TypeVar, List

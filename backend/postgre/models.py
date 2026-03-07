@@ -75,7 +75,7 @@ class Events(Base):  # - задачи (к заметкам дополнител�
 class Calendars(Base):
     __tablename__ = "calendars"
 
-    cid: Mapped[str] = mapped_column(primary_key=True)
+    calendar_id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     color: Mapped[str]
 
