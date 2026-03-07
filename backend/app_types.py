@@ -43,3 +43,8 @@ class UserStatusEnum(Enum):
     USER_REGISTERED = "USER_REGISTERED"
     USER_LOGGED_IN = "USER_LOGGED_IN"
     USER_LOGGED_OUT = "USER_LOGGED_OUT"
+
+@unique
+class TaskActionEnum(Enum):
+    COMPLETE = "COMPLETE_TASK"
+    INCOMPLETE = "INCOMPLITE_TASK"

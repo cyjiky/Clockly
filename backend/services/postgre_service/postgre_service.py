@@ -28,15 +28,15 @@ class PostgreService:
     async def create_model(self, Model: M, **kwargs) -> M:
         return Model(**kwargs)
 
-    async def get_user_by_username(self, username: str) -> User | None:
+    async def get_user_by_username(self, username: str) -> Users | None:
         res = await self.__sesion.execute(
-            select(User).where(User.username == username)
+            select(Users).where(Users.username == username)
         )
         return res.scalar()
 
-    async def get_user_by_email(self, email: str) -> User | None:
+    async def get_user_by_email(self, email: str) -> Users | None:
         res = await self.__sesion.execute(
-            select(User).where(User.email == email)
+            select(Users).where(Users.email == email)
         )
         return res.scalar()
 

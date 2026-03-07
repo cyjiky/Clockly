@@ -15,7 +15,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class User(Base):
+class Users(Base):
     __tablename__ = "users"
 
     user_id: Mapped[str] = mapped_column(primary_key=True)
@@ -83,5 +83,7 @@ class Calendars(Base):
     # If is_initial set to True, this calendar shouldn't be deleted
     is_initial: Mapped[bool] = mapped_column(default=False)
 
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    
     events: Mapped[List["Events"]] = relationship("Events", back_populates="calendar")
     tasks: Mapped[List["Tasks"]] = relationship("Tasks", back_populates="calendar")

@@ -4,9 +4,10 @@ from uuid import uuid4
 
 from DTOs import *  # Optional
 from services import CoreServiceBase
-from postgre import Tasks, Events
-from app_types import TimeLineEnum, BothTaskEventEnum
+from postgre import Tasks, Events, Users, Calendars
+from app_types import TimeLineEnum, TaskActionEnum, BothTaskEventEnum
 
+from typing import Dict
 
 class CalendarService(CoreServiceBase):
     @staticmethod
@@ -23,7 +24,7 @@ class CalendarService(CoreServiceBase):
 
         return provided_calendar_id
 
-    async def create_task(self, creds: TaskScheme) -> None:
+    async def create_task(self, user_id: str, creds: TaskScheme) -> None:
         defined_calendar_id = await self._define_calendar_id(creds.calendar_id)
 
         new_task_id = str(uuid4())
@@ -34,10 +35,11 @@ class CalendarService(CoreServiceBase):
             start_date=creds.start_date,
             end_date=creds.end_date,
             calendar_id=defined_calendar_id,
+            user_id=user_id
         )
         await self._PostgreService.flush_models(new_task)
 
-    async def create_event(self, creds: EventScheme) -> None:
+    async def create_event(self, user_id: str, creds: EventScheme) -> None:
         defined_calendar_id = await self._define_calendar_id(creds.calendar)
 
         new_events_id = str(uuid4())
@@ -48,6 +50,7 @@ class CalendarService(CoreServiceBase):
             start_date=creds.start_date,
             end_date=creds.end_date,
             calendar_id=defined_calendar_id,
+            user_id=user_id
         )
 
         await self._PostgreService.flush_models(new_event)
@@ -60,19 +63,30 @@ class CalendarService(CoreServiceBase):
         )
 
         new_calendar_id = str(uuid4())
-        new_event = Events(
+        new_event = Calendars(
             calendar_id=new_calendar_id,
             calendar_name=creds.name,
             color=creds.color,
             is_initial=False if potential_calendar else True,
+            user_id=user_id
         )
 
         await self._PostgreService.flush_models(new_event)
 
-    async def change_task():
+    async def change_task(self, user_id: str, task_id: str) -> None:
         pass
 
-    async def change_event():
+    async def change_event(self, user_id: str, event_id: str) -> None:
+        pass
+
+    async def delete_task(self, user_id: str, task_id: str) -> None:
+        pass
+
+    async def delete_event(self, user_id: str, event_id: str) -> None:
+        pass
+
+
+    async def task_action(self, user_id: str, task_id: str, action: TaskActionEnum) -> None:
         pass
 
     async def get_month_data(self, user_id: str) -> ObjectsMonthDataScheme:

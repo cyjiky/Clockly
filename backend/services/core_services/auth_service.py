@@ -9,7 +9,7 @@ from DTOs import LoginBody, RegisterBody, JWTPayload, JWTsResponse
 from auth import *
 from services import CoreServiceBase
 from utils import validate_email, validate_password
-from postgre import User
+from postgre import Users
 
 load_dotenv()
 
@@ -92,7 +92,7 @@ class AuthService(CoreServiceBase):
 
         password_hash = hash_password(creds.password)
         new_user_id = str(uuid4())
-        new_user = User(
+        new_user = Users(
             user_id=new_user_id,
             username=creds.username,
             email=creds.email,
