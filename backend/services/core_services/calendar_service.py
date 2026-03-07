@@ -18,9 +18,7 @@ class CalendarService(CoreServiceBase):
         self, provided_calendar_id: str | None
     ) -> str:
         if not provided_calendar_id:
-            initial_calendar = (
-                await self._PostgreService.get_user_initial_calendar()
-            )
+            initial_calendar = await self._PostgreService.get_user_initial_calendar()
             provided_calendar_id = initial_calendar.calendar_id
 
         return provided_calendar_id

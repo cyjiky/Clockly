@@ -3,17 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy.orm import DeclarativeBase
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy import ForeignKey
 from sqlalchemy import func
-from sqlalchemy import Integer
 from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -29,9 +24,9 @@ class User(Base):
     create_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     password_hash = Mapped[str]
 
-    tasks: Mapped[List[Tasks]] = relationship()
-    events: Mapped[List[Events]] = relationship()
-    calendars: Mapped[List[Calendars]] = relationship()
+    tasks: Mapped[List[Tasks]] = relationship("Tasks")
+    events: Mapped[List[Events]] = relationship("Events")
+    calendars: Mapped[List[Calendars]] = relationship("Calendars")
 
     def __repr__(self) -> str:
         return f"User:{self.id=}:{self.username=}"
@@ -52,7 +47,7 @@ class Tasks(Base):  # - названия заметок
     calendar_id: Mapped[str] = mapped_column(
         ForeignKey("calendars.calendar_id")
     )
-    calendar: Mapped[Calendars] = relationship(back_populates="tasks")
+    calendar: Mapped[Calendars] = relationship("Calendars", back_populates="tasks")
 
     def __repr__(self) -> str:
         return f"Tasks:{self.id}:{self.name}"
@@ -71,7 +66,7 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     calendar_id: Mapped[str] = mapped_column(
         ForeignKey("calendars.calendar_id")
     )
-    calendar: Mapped[Calendars] = relationship(back_populates="events")
+    calendar: Mapped[Calendars] = relationship("Calendars", back_populates="events")
 
     def __repr__(self) -> str:
         return f"Events:{self.id}:{self.name}"
@@ -88,5 +83,5 @@ class Calendars(Base):
     # If is_initial set to True, this calendar shouldn't be deleted
     is_initial: Mapped[bool] = mapped_column(default=False)
 
-    events: Mapped[List[Events]] = relationship(back_populates="calendar")
-    tasks = Mapped[List[Tasks]] = relationship(back_populates="calendar")
+    events: Mapped[List["Events"]] = relationship("Events", back_populates="calendar")
+    tasks: Mapped[List["Tasks"]] = relationship("Tasks", back_populates="calendar")
