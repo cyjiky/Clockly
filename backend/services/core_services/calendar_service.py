@@ -31,7 +31,7 @@ class CalendarService(CoreServiceBase):
         new_task = Tasks(
             id=new_task_id,
             name=creds.task_name,
-            additional_description=creds.additional_description,
+            additional_description=creds.description,
             start_date=creds.start_date,
             end_date=creds.end_date,
             calendar_id=defined_calendar_id,
@@ -45,8 +45,8 @@ class CalendarService(CoreServiceBase):
         new_events_id = str(uuid4())
         new_event = Events(
             id=new_events_id,
-            name=creds.event_name,
-            additional_description=creds.additional_description,
+            name=creds.name,
+            additional_description=creds.description,
             start_date=creds.start_date,
             end_date=creds.end_date,
             calendar_id=defined_calendar_id,
@@ -73,26 +73,46 @@ class CalendarService(CoreServiceBase):
 
         await self._PostgreService.flush_models(new_event)
 
-    async def change_task(self, user_id: str, task_id: str) -> None:
-        pass
+    async def change_task(self, user_id: str, task_id: str, creds: TaskScheme) -> None:
 
-    async def change_event(self, user_id: str, event_id: str) -> None:
-        pass
-    
-        # defined_calendar_id = await self._define_calendar_id(event_id.calendar)
+        db_task = await self._PostgreService.get_task(
+            task_id=task_id,
+        )
+        if not db_task:
+            raise ValueError(f"Task with id {task_id} not found")
 
-        # new_events_id = str(uuid4())
-        # new_event = Events(
-        #     id=new_events_id,
-        #     name=event_id.event_name,
-        #     additional_description=event_id.additional_description,
-        #     start_date=event_id.start_date,
-        #     end_date=event_id.end_date,
-        #     calendar_id=defined_calendar_id,
-        #     user_id=user_id
-        # )
+        if db_task.user_id != user_id:
+            raise ValueError(
+                detail=f"Oh noooo, Mashellaaa.. :(",
+            )
+        
+        db_task.additional_description=creds.description
+        db_task.start_date=creds.start_date
+        db_task.end_date=creds.end_date
+        db_task.calendar_id=creds.calendar
 
-        # await self._PostgreService.flush_models(new_event)
+        await self._PostgreService.flush() 
+
+    async def change_event(self, user_id: str, event_id: str, creds: EventScheme) -> None:
+
+        db_task = await self._PostgreService.get_event(
+            event_id=event_id, 
+        )
+
+        if not db_task:
+            raise ValueError(f"Task with id {event_id} not found")
+
+        if db_task.user_id != user_id:
+            raise ValueError(
+                detail=f"Oh noooo, Mashellaaa.. :(",
+            )
+        
+        db_task.additional_description=creds.description
+        db_task.start_date=creds.start_date
+        db_task.end_date=creds.end_date
+        db_task.calendar_id=creds.calendar
+
+        await self._PostgreService.flush() 
 
     async def delete_task(self, user_id: str, task_id: str) -> None:
         pass

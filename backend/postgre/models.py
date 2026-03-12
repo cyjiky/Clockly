@@ -56,7 +56,7 @@ class Tasks(Base):  # - названия заметок
 class Events(Base):  # - задачи (к заметкам дополнительно)
     __tablename__ = "events"
 
-    id: Mapped[str] = mapped_column(primary_key=True)
+    event_id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     additional_description: Mapped[str]
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())

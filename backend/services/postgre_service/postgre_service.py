@@ -98,6 +98,16 @@ class PostgreService:
             )
         )
         return res.scalars().all()
+    
+    async def get_event(
+        self, event_id: str
+    ) -> Events | None: 
+        pass
+
+    async def get_task(
+        self, task_id: str 
+    ) -> Tasks | None:
+        pass
 
     async def get_user_initial_calendar(
         self, user_id: str
