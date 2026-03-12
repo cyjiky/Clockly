@@ -78,6 +78,21 @@ class CalendarService(CoreServiceBase):
 
     async def change_event(self, user_id: str, event_id: str) -> None:
         pass
+    
+        # defined_calendar_id = await self._define_calendar_id(event_id.calendar)
+
+        # new_events_id = str(uuid4())
+        # new_event = Events(
+        #     id=new_events_id,
+        #     name=event_id.event_name,
+        #     additional_description=event_id.additional_description,
+        #     start_date=event_id.start_date,
+        #     end_date=event_id.end_date,
+        #     calendar_id=defined_calendar_id,
+        #     user_id=user_id
+        # )
+
+        # await self._PostgreService.flush_models(new_event)
 
     async def delete_task(self, user_id: str, task_id: str) -> None:
         pass
