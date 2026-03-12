@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 from uuid import uuid4
-import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from os import getenv
 
@@ -19,7 +19,7 @@ REFRESH_JWT_EXPIRY_SECONDS = int(getenv("REFRESH_JWT_EXPIRY_SECONDS"))
 
 class AuthService(CoreServiceBase):
     def generate_auth_tokens(self, new_user_id: str):
-        access_jwt_expiry = datetime.now() + datetime.timedelta(
+        access_jwt_expiry = datetime.now() + timedelta(
             seconds=ACCESS_JWT_EXPIRY_SECONDS
         )
         access_jwt_payload = JWTPayload(
@@ -28,7 +28,7 @@ class AuthService(CoreServiceBase):
             expires_at=access_jwt_expiry,
         )
 
-        refresh_jwt_expiry = datetime.now() + datetime.timedelta(
+        refresh_jwt_expiry = datetime.now() + timedelta(
             seconds=REFRESH_JWT_EXPIRY_SECONDS
         )
         refresh_jwt_payload = JWTPayload(
