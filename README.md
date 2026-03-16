@@ -34,11 +34,11 @@ Clockly is a mobile calendar application. The project is designed to be an advan
  |    ├── 📁 auth                   authentication & authorization
  |    ├── 📁 DTOs                   data transfer objects
  |    ├── 📁 routers                api route definition
- |    ├── 📁 postgre
+ |    ├── 📁 postgre                postgres setup via SQLAlchemy
  |    ├── 📁 services               logic layer
- |    |    ├── 📁 core services
- |    |    ├── 📁 postgre service
- |    |    └── 📁 redis
+ |    |    ├── 📁 core services     core servies responsible for business logic
+ |    |    ├── 📁 postgre service   postgres database service
+ |    |    └── 📁 redis             redis database service (currently disabled)
  |    ├── 📁 utils                  shared helper functions
  |    ├── 📝 main.py                backend entry point
  |    ├── ⚙️ .env                   environment variables (excluded from git)
