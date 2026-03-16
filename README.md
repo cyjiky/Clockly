@@ -1,6 +1,10 @@
 # Clockly 
 
-### Stack
+## How it works? 
+
+> TODO :) 
+
+## Stack
 
 <div style="display:flex; gap:10px; align-items:center;">
   <img width="40px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" />
@@ -21,7 +25,39 @@
 - React Native
 - Expo
 
----
+## Structure 
+
+```text 
+📁.                                 project folder
+ ├── 📁 backend                     server-side logic
+ |    ├── 📁 auth                   authentication & authorization
+ |    ├── 📁 DTOs                   data transfer objects 
+ |    ├── 📁 routers                api route definition
+ |    ├── 📁 postgre                
+ |    ├── 📁 services               logic layer
+ |    |    ├── 📁 core services     
+ |    |    ├── 📁 postgre service   
+ |    |    └── 📁 redis             
+ |    ├── 📁 utils                  shared helper functions
+ |    ├── 📝 main.py                backend entry point
+ |    ├── ⚙️ .env                   environment variables (excluded from git)
+ |    ├── ⚙️ .gitignore             vcs ignore 
+ |    ├── 🐳 Containerfile          backend container build 
+ |    └── 📝 pyproject.toml         python dependencies & config
+ ├── 📁 frontend                    client-side application (development has not started)
+ |    ├── 📁 app                    application routing & pages
+ |    ├── 📁 assets                 static files
+ |    ├── 📁 components             reusable UI elements
+ |    ├── 📁 constants              global constants & configurations
+ |    ├── 📁 hooks                  custom state & lifecycle hooks
+ |    ├── 📝 package.json           frontend dependencies & scripts
+ |    ├── ⚙️ .env                   environment variables (excluded from git)
+ |    ├── ⚙️ .gitignore             vcs ignore 
+ |    └── 🐳 Containerfile          frontend container build 
+ ├── 🐳 compose.yaml                docker compose orchestration
+ ├── 📄LICENCE                      LICENCE
+ └── 📍README.md                    project description 
+```
 
 ## Run
 
@@ -91,6 +127,16 @@ Start the application via expo
 ```bash
 npx expo start # or yarn expo start
 ```
+
+## How to use FastAPI
+
+https://fastapi.tiangolo.com
+
+FastAPI provides automatic interactive documentation.
+
+  1. Ensure the backend server is running 
+  2. Open your browser and navigate to: http://127.0.0.1:8000/docs (Swagger UI)
+  3. Here you can see all available endpoints and test requests directly in the browser
 
 ---
 
