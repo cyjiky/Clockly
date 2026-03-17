@@ -22,6 +22,7 @@ async def login(
         await auth_service.close(commit=False)
         raise e from e
 
+
 @auth.post("/register")
 async def register(
     register_creds: RegisterBody,
@@ -35,7 +36,7 @@ async def register(
     except Exception as e:
         await auth_service.close(commit=False)
         raise e from e
-    
+
 
 # Disabled
 # @auth.post("/logout")

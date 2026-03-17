@@ -30,15 +30,13 @@ class PostgreService:
 
     async def get_user_by_username(self, username: str) -> Users | None:
         res = await self.__sesion.execute(
-            select(Users)
-            .where(Users.username == username)
+            select(Users).where(Users.username == username)
         )
         return res.scalars().one_or_none()
 
     async def get_user_by_email(self, email: str) -> Users | None:
         res = await self.__sesion.execute(
-            select(Users)
-            .where(Users.email == email)
+            select(Users).where(Users.email == email)
         )
         return res.scalars().one_or_none()
 
@@ -55,6 +53,18 @@ class PostgreService:
             select(Events).where(Events.user_id == user_id).limit(n)
         )
         return res.scalars().all()
+
+    async def get_event_by_id(self, event_id: str) -> Events:
+        res = await self.__sesion.execute(
+            select(Events).where(Events.id == event_id)
+        )
+        return res.scalars().one_or_none()
+
+    async def get_task_by_id(self, task_id: str) -> Tasks:
+        res = await self.__sesion.execute(
+            select(Tasks).where(Tasks.id == task_id)
+        )
+        return res.scalars().one_or_none()
 
     # async def get_task_by_data(self, user_id: str, data: datetime) -> Tasks | None:
     #     res = await self.__sesion.execute(
@@ -100,23 +110,12 @@ class PostgreService:
             )
         )
         return res.scalars().all()
-    
-    async def get_event(
-        self, event_id: str
-    ) -> Events | None: 
-        pass
 
-    async def get_task(
-        self, task_id: str 
-    ) -> Tasks | None:
-        pass
-
-    async def get_user_initial_calendar(
-        self, user_id: str
-    ) -> Calendars:
+    async def get_user_initial_calendar(self, user_id: str) -> Calendars:
         res = await self.__sesion.execute(
-            select(Calendars)
-            .where(Calendars.user_id == user_id, Calendars.is_initial == True)
+            select(Calendars).where(
+                Calendars.user_id == user_id, Calendars.is_initial == True
+            )
         )
 
         return res.scalars().one_or_none()
@@ -128,29 +127,21 @@ class PostgreService:
             curr_date=curr_datetime, timerange=timerange
         )
 
-        stmt1 = (
-            select(Events)
-            .where(
-                Events.user_id == user_id,
-                Events.start_date >= start_date,
-                Events.start_date <= end_date,
-            )
+        stmt1 = select(Events).where(
+            Events.user_id == user_id,
+            Events.start_date >= start_date,
+            Events.start_date <= end_date,
         )
 
-        stmt2 = (
-            select(Tasks)
-            .where(
-                Tasks.user_id == user_id,
-                Tasks.start_date >= start_date,
-                Tasks.start_date <= end_date,
-            )
+        stmt2 = select(Tasks).where(
+            Tasks.user_id == user_id,
+            Tasks.start_date >= start_date,
+            Tasks.start_date <= end_date,
         )
 
         union_stmt = union_all(stmt1, stmt2)
 
-        result = await self.__sesion.execute(
-            select(union_stmt)
-        )
+        result = await self.__sesion.execute(select(union_stmt))
 
         return result.scalars().all()
 

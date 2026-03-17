@@ -13,16 +13,18 @@ class TimeObjectScheme(BaseModel):
     name: str
     description: Optional[str] = None
 
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    calendar_id: Optional[
-        str
-    ]  # If None, will be assigned to user's initial Calendar
+    start_date: datetime
+    end_date: datetime
+
+    # If None, object will be assigned to user's
+    # initial Calendar on object creation
+    calendar_id: Optional[str]
 
 
 class TaskSchemeOut(TimeObjectScheme):
     completed: bool
     calendar: CalendarScheme
+
 
 class EventSchemeOut(TimeObjectScheme):
     calendar: CalendarScheme

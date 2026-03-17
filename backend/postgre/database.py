@@ -62,10 +62,12 @@ async def get_session_depends() -> AsyncGenerator[AsyncSession, None]:
     finally:
         await session.aclose()
 
+
 async def get_session() -> AsyncSession:
     engine = await get_async_engine(mode=APP_MODE)
     ready_sessionmaker = await get_async_sessionmaker(engine)
-    return ready_sessionmaker() 
+    return ready_sessionmaker()
+
 
 async def initialize_models(
     Base: DeclarativeBase, engine: AsyncEngine
@@ -74,7 +76,9 @@ async def initialize_models(
         await conn.run_sync(Base.metadata.create_all)
         await conn.commit()
 
+
 M = TypeVar("M", bound=Base)
+
 
 async def merge_model(model: M, postgres_session: AsyncSession) -> M:
     """Use to merge model from diferent session"""

@@ -19,6 +19,7 @@ REFRESH_JWT_EXPIRY_SECONDS = int(getenv("REFRESH_JWT_EXPIRY_SECONDS"))
 
 DATETIME_FORMAT = getenv("DATETIME_FORMAT")
 
+
 class AuthService(CoreServiceBase):
     def _generate_auth_tokens(self, new_user_id: str):
         access_jwt_expiry = datetime.now() + timedelta(
@@ -48,7 +49,7 @@ class AuthService(CoreServiceBase):
             refresh_token=refresh_jwt,
             refresh_token_expiry=refresh_jwt_expiry,
         )
-    
+
     async def authorize_request_jwt_and_return_user(self, jwt: str) -> Users:
         """Raise 401 on failed authorization"""
         return await self._PostgreService.get_user_by_username("yehor")
@@ -111,7 +112,7 @@ class AuthService(CoreServiceBase):
             name=creds.username,
             color="#4361EE",
             is_initial=True,
-            user_id=new_user_id
+            user_id=new_user_id,
         )
 
         await self._PostgreService.flush_models(new_user, initial_calendar)
@@ -119,9 +120,7 @@ class AuthService(CoreServiceBase):
         return self._generate_auth_tokens(new_user_id=new_user_id)
 
     async def logout(self):
-        raise Exception(
-            "Method is disabled"
-        )
+        raise Exception("Method is disabled")
 
     async def change_username(self):
         pass
