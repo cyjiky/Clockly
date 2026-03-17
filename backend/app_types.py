@@ -37,6 +37,9 @@ class BothTaskEventEnum(Enum):
     EVENT = "EVENT"
     BOTH = "BOTH"
 
+class TimeObjectsEnum(Enum):
+    TASK = "TASK"
+    EVENT = "EVENT"
 
 @unique
 class UserStatusEnum(Enum):

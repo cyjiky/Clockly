@@ -30,15 +30,17 @@ class PostgreService:
 
     async def get_user_by_username(self, username: str) -> Users | None:
         res = await self.__sesion.execute(
-            select(Users).where(Users.username == username)
+            select(Users)
+            .where(Users.username == username)
         )
-        return res.scalar()
+        return res.scalars().one_or_none()
 
     async def get_user_by_email(self, email: str) -> Users | None:
         res = await self.__sesion.execute(
-            select(Users).where(Users.email == email)
+            select(Users)
+            .where(Users.email == email)
         )
-        return res.scalar()
+        return res.scalars().one_or_none()
 
     async def get_tasks_by_userId(self, user_id: str, n: int) -> Tasks | None:
         res = await self.__sesion.execute(
@@ -111,8 +113,13 @@ class PostgreService:
 
     async def get_user_initial_calendar(
         self, user_id: str
-    ) -> Calendars | None:
-        pass
+    ) -> Calendars:
+        res = await self.__sesion.execute(
+            select(Calendars)
+            .where(Calendars.user_id == user_id, Calendars.is_initial == True)
+        )
+
+        return res.scalars().one_or_none()
 
     async def get_by_range(
         self, user_id: str, curr_datetime: datetime, timerange: TimeLineEnum

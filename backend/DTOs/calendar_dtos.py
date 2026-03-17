@@ -9,37 +9,22 @@ class CalendarScheme(BaseModel):
     color: str
 
 
-class TaskScheme(BaseModel):
+class TimeObjectScheme(BaseModel):
     name: str
     description: Optional[str] = None
 
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    calendar: Optional[
+    calendar_id: Optional[
         str
     ]  # If None, will be assigned to user's initial Calendar
 
 
-class TaskSchemeOut(TaskScheme):
+class TaskSchemeOut(TimeObjectScheme):
     completed: bool
     calendar: CalendarScheme
 
-
-class EventScheme(BaseModel):
-    name: str
-    description: Optional[str] = None
-
-    start_date: datetime
-    end_date: Optional[datetime] = None
-    calendar: Optional[
-        str
-    ]  # If None, will be assigned to user's initial Calendar
-
-    # repeat_days: List[str] = []
-    # repeat_time: List[datetime] = []
-
-
-class EventSchemeOut(EventScheme):
+class EventSchemeOut(TimeObjectScheme):
     calendar: CalendarScheme
 
 

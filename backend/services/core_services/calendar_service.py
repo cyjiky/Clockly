@@ -5,7 +5,7 @@ from uuid import uuid4
 from DTOs import *  # Optional
 from services import CoreServiceBase
 from postgre import Tasks, Events, Users, Calendars
-from app_types import TimeLineEnum, TaskActionEnum, BothTaskEventEnum
+from app_types import *
 
 from typing import Dict
 
@@ -16,44 +16,58 @@ class CalendarService(CoreServiceBase):
         return weekdays[weekday % 7]
 
     async def _define_calendar_id(
-        self, provided_calendar_id: str | None
+        self, provided_calendar_id: str | None,
+        user_id: str
     ) -> str:
         if not provided_calendar_id:
-            initial_calendar = await self._PostgreService.get_user_initial_calendar()
+            initial_calendar = await self._PostgreService.get_user_initial_calendar(user_id)
             provided_calendar_id = initial_calendar.calendar_id
 
         return provided_calendar_id
 
-    async def create_task(self, user_id: str, creds: TaskScheme) -> None:
-        defined_calendar_id = await self._define_calendar_id(creds.calendar_id)
+    async def _create_task(self, user_id: str, task_data: TimeObjectScheme) -> None:
+        defined_calendar_id = await self._define_calendar_id(task_data.calendar_id, user_id)
 
         new_task_id = str(uuid4())
         new_task = Tasks(
-            id=new_task_id,
-            name=creds.task_name,
-            additional_description=creds.description,
-            start_date=creds.start_date,
-            end_date=creds.end_date,
+            task_id=new_task_id,
+            name=task_data.name,
+            additional_description=task_data.description,
+            start_date=task_data.start_date,
+            end_date=task_data.end_date,
             calendar_id=defined_calendar_id,
             user_id=user_id
         )
         await self._PostgreService.flush_models(new_task)
 
-    async def create_event(self, user_id: str, creds: EventScheme) -> None:
-        defined_calendar_id = await self._define_calendar_id(creds.calendar)
-
+    async def _create_event(self, user_id: str, event_data: TimeObjectScheme) -> None:
+        defined_calendar_id = await self._define_calendar_id(event_data.calendar_id, user_id)
+        print("creating model")
         new_events_id = str(uuid4())
         new_event = Events(
-            id=new_events_id,
-            name=creds.name,
-            additional_description=creds.description,
-            start_date=creds.start_date,
-            end_date=creds.end_date,
+            event_id=new_events_id,
+            name=event_data.name,
+            additional_description=event_data.description,
+            start_date=event_data.start_date,
+            end_date=event_data.end_date,
             calendar_id=defined_calendar_id,
             user_id=user_id
         )
-
+        print("flushing model")
         await self._PostgreService.flush_models(new_event)
+
+    async def create_time_object(self, user_id: str, object_type: TimeObjectsEnum, object_data: TimeObjectScheme) -> None:
+        match object_type:
+            case TimeObjectsEnum.TASK:
+                await self._create_task(
+                    user_id=user_id,
+                    task_data=object_data
+                )
+            case TimeObjectsEnum.EVENT:
+                await self._create_event(
+                    user_id=user_id,
+                    event_data=object_data
+                )
 
     async def create_calendar(self, user_id: str, creds: CalendarScheme) -> None:
         potential_calendar = (
@@ -73,7 +87,7 @@ class CalendarService(CoreServiceBase):
 
         await self._PostgreService.flush_models(new_event)
 
-    async def change_task(self, user_id: str, task_id: str, creds: TaskScheme) -> None:
+    async def change_task(self, user_id: str, task_id: str, creds: TimeObjectScheme) -> None:
 
         db_task = await self._PostgreService.get_task(
             task_id=task_id,
@@ -93,7 +107,7 @@ class CalendarService(CoreServiceBase):
 
         await self._PostgreService.flush() 
 
-    async def change_event(self, user_id: str, event_id: str, creds: EventScheme) -> None:
+    async def change_event(self, user_id: str, event_id: str, creds: TimeObjectsEnum) -> None:
 
         db_task = await self._PostgreService.get_event(
             event_id=event_id, 

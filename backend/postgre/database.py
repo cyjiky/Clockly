@@ -1,18 +1,16 @@
 from app_types import AppRunningMode
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
-    async_session,
     async_sessionmaker,
     AsyncSession,
     AsyncEngine,
 )
-from sqlalchemy import URL
 from sqlalchemy.orm import DeclarativeBase
+from .models import Base
 
 from dotenv import load_dotenv
 import os
-from typing import AsyncGenerator
-import asyncio
+from typing import AsyncGenerator, TypeVar
 
 load_dotenv()
 
@@ -64,6 +62,10 @@ async def get_session_depends() -> AsyncGenerator[AsyncSession, None]:
     finally:
         await session.aclose()
 
+async def get_session() -> AsyncSession:
+    engine = await get_async_engine(mode=APP_MODE)
+    ready_sessionmaker = await get_async_sessionmaker(engine)
+    return ready_sessionmaker() 
 
 async def initialize_models(
     Base: DeclarativeBase, engine: AsyncEngine
@@ -71,3 +73,9 @@ async def initialize_models(
     async with engine.connect() as conn:  # engine.connect() engine.begin()
         await conn.run_sync(Base.metadata.create_all)
         await conn.commit()
+
+M = TypeVar("M", bound=Base)
+
+async def merge_model(model: M, postgres_session: AsyncSession) -> M:
+    """Use to merge model from diferent session"""
+    return await postgres_session.merge(model)

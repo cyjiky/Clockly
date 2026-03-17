@@ -11,42 +11,37 @@ auth = APIRouter()
 @auth.post("/login")
 async def login(
     login_creds: LoginBody,
-    postgre_session: AsyncSession = Depends(get_session_depends),
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> JWTsResponse:
-    exception_occured = False
+    auth_service: AuthService = await AuthService.create(postgres_session)
     try:
-        auth_service: AuthService = await AuthService.create(postgre_session)
-        return await auth_service.register(login_creds)
+        out = await auth_service.login(creds=login_creds)
+        await auth_service.close(commit=True)
+        return out
     except Exception as e:
-        exception_occured = True
+        await auth_service.close(commit=False)
         raise e from e
-    finally:
-        if not exception_occured:
-            await auth_service.close(commit=True)
-
 
 @auth.post("/register")
 async def register(
     register_creds: RegisterBody,
-    postgre_session: AsyncSession = Depends(get_session_depends),
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> JWTsResponse:
-    exception_occured = False
-
+    auth_service: AuthService = await AuthService.create(postgres_session)
     try:
-        auth_service: AuthService = await AuthService.create(postgre_session)
-        return await auth_service.register(register_creds)
+        out = await auth_service.register(creds=register_creds)
+        await auth_service.close(commit=True)
+        return out
     except Exception as e:
-        exception_occured = True
+        await auth_service.close(commit=False)
         raise e from e
-    finally:
-        if not exception_occured:
-            await auth_service.close(commit=True)
+    
 
-
-@auth.post("/logout")
-async def logout():
-    try:
-        auth_service: AuthService = await AuthService[AuthService].create()
-        return await auth_service.logout()
-    finally:
-        auth_service.close()
+# Disabled
+# @auth.post("/logout")
+# async def logout():
+#     try:
+#         auth_service: AuthService = await AuthService[AuthService].create()
+#         return await auth_service.logout()
+#     finally:
+#         auth_service.close()

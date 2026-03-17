@@ -29,13 +29,13 @@ class Users(Base):
     calendars: Mapped[List[Calendars]] = relationship("Calendars")
 
     def __repr__(self) -> str:
-        return f"User:{self.id=}:{self.username=}"
+        return f"User:{self.user_id=}:{self.username=}"
 
 
 class Tasks(Base):  # - названия заметок
     __tablename__ = "tasks"
 
-    id: Mapped[str] = mapped_column(primary_key=True)
+    task_id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     additional_description: Mapped[Optional[str]]
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
@@ -43,11 +43,11 @@ class Tasks(Base):  # - названия заметок
 
     completed: Mapped[bool] = mapped_column(default=False)
 
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"))
     calendar_id: Mapped[str] = mapped_column(
-        ForeignKey("calendars.calendar_id")
+        ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
-    calendar: Mapped[Calendars] = relationship("Calendars", back_populates="tasks")
+    calendar: Mapped[Calendars | None] = relationship("Calendars", back_populates="tasks")
 
     def __repr__(self) -> str:
         return f"Tasks:{self.id}:{self.name}"
@@ -62,11 +62,11 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
 
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
-    calendar_id: Mapped[str] = mapped_column(
-        ForeignKey("calendars.calendar_id")
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"))
+    calendar_id: Mapped[str | None] = mapped_column(
+        ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
-    calendar: Mapped[Calendars] = relationship("Calendars", back_populates="events")
+    calendar: Mapped[Calendars | None] = relationship("Calendars", back_populates="events")
 
     def __repr__(self) -> str:
         return f"Events:{self.id}:{self.name}"
@@ -83,7 +83,7 @@ class Calendars(Base):
     # If is_initial set to True, this calendar shouldn't be deleted
     is_initial: Mapped[bool] = mapped_column(default=False)
 
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"))
     
     events: Mapped[List["Events"]] = relationship("Events", back_populates="calendar")
     tasks: Mapped[List["Tasks"]] = relationship("Tasks", back_populates="calendar")
