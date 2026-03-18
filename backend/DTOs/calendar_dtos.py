@@ -49,7 +49,7 @@ class DayScheme(BaseModel):
     objects: BothScheme
 
 
-class ObjectsMonthDataScheme(BaseModel):
+class ObjectsMonthData(BaseModel):
     month: int
     year: int
     data: List[DayScheme]

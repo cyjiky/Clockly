@@ -151,7 +151,7 @@ class CalendarService(CoreServiceBase):
     async def delete_task(self, user_id: str, task_id: str) -> None:
         pass
 
-    async def delete_event(self, user_id: str, event_id: str) -> None:
+    async def delete_object(self, user_id: str, event_id: str) -> None:
         pass
 
     async def task_action(
@@ -159,7 +159,7 @@ class CalendarService(CoreServiceBase):
     ) -> None:
         pass
 
-    async def get_month_data(self, user_id: str) -> ObjectsMonthDataScheme:
+    async def get_month_data(self, user_id: str) -> ObjectsMonthData:
         curr_datetime = datetime.now()
         objects = await self._PostgreService.get_by_range(
             user_id=user_id,
@@ -201,7 +201,7 @@ class CalendarService(CoreServiceBase):
 
             objects_by_days[object.start_date.day] = day_objects
 
-        return ObjectsMonthDataScheme(
+        return ObjectsMonthData(
             month=curr_datetime.month,
             year=curr_datetime.year,
             data=[
