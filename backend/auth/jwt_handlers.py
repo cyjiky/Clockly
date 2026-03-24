@@ -13,7 +13,10 @@ def prepare_jwt(jwt_string: str) -> str:
 
 def generate_jwt(payload: JWTPayload) -> str:
     return jwt.encode(
-        payload.model_dump(), os.getenv("JWT_SECRET_KEY"), algorithm="HS256"
+        # Set mode="json" to correctly serialize datetime objects
+        payload.model_dump(mode="json"),
+        os.getenv("JWT_SECRET_KEY"),
+        algorithm="HS256",
     )
 
 

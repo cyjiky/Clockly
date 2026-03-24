@@ -11,6 +11,7 @@ from postgre import initialize_models, get_async_engine, Base
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """For async SQLalchemy models initialization"""
+
     engine = await get_async_engine()
     print(f"Got async engine: {type(engine)}")
     print("Initializing models")
