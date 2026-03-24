@@ -34,7 +34,7 @@ async def get_month_data(
 @calendar.post("/object/{time_object_type}")
 async def create_time_object(
     time_object_type: TimeObjectsEnum,
-    time_object_data: TimeObjectScheme,
+    time_object_data: TimeObjectSchemeCreate,
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> None:
@@ -57,7 +57,7 @@ async def create_time_object(
 async def update_object(
     time_object_type: TimeObjectsEnum,
     object_id: str,
-    time_object_data: TimeObjectScheme = Body(...),
+    time_object_data: TimeObjectSchemeCreate = Body(...),
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends)
 ) -> None:
@@ -136,7 +136,7 @@ async def unfulfilled_tasks(
     task_id: str,
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends)
-) -> UnfulfilledTasksResponse:  # TODO
+):  # TODO
     calendar_service = await CalendarService.create(postgres_session)
 
     # No need to commit data to the database

@@ -8,7 +8,7 @@ load_dotenv()
 
 
 def prepare_jwt(jwt_string: str) -> str:
-    return jwt_string.removeprefix("Bearer")
+    return jwt_string.removeprefix("Bearer ")
 
 
 def generate_jwt(payload: JWTPayload) -> str:

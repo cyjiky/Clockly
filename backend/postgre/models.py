@@ -5,9 +5,7 @@ from datetime import datetime
 from sqlalchemy.orm import DeclarativeBase
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey
-from sqlalchemy import func
-from sqlalchemy import String
+from sqlalchemy import ForeignKey, func, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -38,8 +36,8 @@ class Tasks(Base):  # - названия заметок
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     additional_description: Mapped[Optional[str]]
-    start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
-    end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+    start_date: Mapped[datetime] = mapped_column()
+    end_date: Mapped[datetime] = mapped_column()
 
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
@@ -48,7 +46,7 @@ class Tasks(Base):  # - названия заметок
         ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
     calendar: Mapped[Calendars | None] = relationship(
-        "Calendars", back_populates="tasks"
+        "Calendars", back_populates="tasks", lazy="selectin"
     )
 
     completed: Mapped[bool] = mapped_column(default=False)
@@ -66,6 +64,8 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
 
+    compatibility: Mapped[bool] = mapped_column(default=True)    
+
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
     )
@@ -73,7 +73,7 @@ class Events(Base):  # - задачи (к заметкам дополнител�
         ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
     calendar: Mapped[Calendars | None] = relationship(
-        "Calendars", back_populates="tasks"
+        "Calendars", back_populates="events", lazy="selectin"
     )
 
     def __repr__(self) -> str:

@@ -52,7 +52,19 @@ class AuthService(CoreServiceBase):
 
     async def authorize_request_jwt_and_return_user(self, jwt: str) -> Users:
         """Raise 401 on failed authorization"""
-        return await self._PostgreService.get_user_by_username("yehor")
+        
+        prepared_jwt = prepare_jwt(jwt_string=jwt)
+        jwt_payload = extract_jwt_payload(jwt_string=prepared_jwt)
+
+        user = await self._PostgreService.get_user_by_id(user_id=jwt_payload.user_id)
+
+        if not user:
+            raise HTTPException(
+                status_code=401,
+                detail="Unauthorized"
+            )
+
+        return user
 
     async def login(self, creds: LoginBody) -> JWTsResponse:
         potential_user = await self._PostgreService.get_user_by_username(
