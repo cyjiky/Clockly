@@ -95,3 +95,48 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+
+
+// import React from 'react';
+// import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+
+// export default function TestTailwindScreen() {
+//   return (
+//     <SafeAreaView className="flex-1 bg-slate-100">
+//       <View className="flex-1 items-center justify-center p-6">
+        
+//         {/* Карточка проверки */}
+//         <View className="w-full bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
+          
+//           <Text className="text-sm font-bold text-indigo-600 uppercase tracking-widest text-center mb-2">
+//             Статус конфигурации
+//           </Text>
+          
+//           <Text className="text-3xl font-black text-slate-900 text-center mb-4">
+//             Tailwind <Text className="text-green-500">Активен</Text>
+//           </Text>
+          
+//           <View className="h-1 w-full bg-slate-100 rounded-full mb-6" />
+
+//           <Text className="text-slate-500 text-center leading-6 mb-8">
+//             Если вы видите закругленные углы, тени и этот текст раскрашен — значит, 
+//             <Text className="font-bold text-slate-700"> NativeWind v4 </Text> 
+//             успешно подключен к вашему Expo проекту.
+//           </Text>
+
+//           {/* Интерактивная кнопка */}
+//           <TouchableOpacity 
+//             activeOpacity={0.7}
+//             className="bg-indigo-600 py-4 rounded-2xl shadow-lg shadow-indigo-300"
+//           >
+//             <Text className="text-white text-center font-semibold text-lg">
+//               Отлично, работаем дальше!
+//             </Text>
+//           </TouchableOpacity>
+
+//         </View>
+
+//       </View>
+//     </SafeAreaView>
+//   );
+// }

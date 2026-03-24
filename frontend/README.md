@@ -2,6 +2,29 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Structure
+
+```text
+📁.                                 
+ ├── 📁 backend                     
+ ├── 📁 frontend                    
+ |    ├── 📁 app                    сердце приложения 
+ |    |    └── 📁 tabs              навигация
+ |    |    |    ├── 📝 _layout.tsx  вид табов (иконок)
+ |    |    |    ├── 📝 explore.tsx  экран вкладки поиск 
+ |    |    |    └── 📝 index.tsx    экран первой вкладки
+ |    ├── 📁 assets                 ресурсы (фото/видео)
+ |    ├── 📁 components             UI-элементы
+ |    |    └── 📁 ui                мелкие ui компоненты 
+ |    ├── 📁 constants              настройки и параметры (цвет, шрифт)
+ |    ├── 📁 hooks                  хуки для виз компонентов
+ |    ├── 📝 package.json           
+ |    ├── ⚙️ .env                   
+ |    ├── ⚙️ .gitignore             
+ |    └── 🐳 Containerfile          
+ └── 📍README.md                    
+```
+
 ## Get started
 
 1. Install dependencies
