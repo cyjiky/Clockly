@@ -18,6 +18,8 @@ class TimeObjectScheme(BaseModel):
 
     # If None, object will be assigned to user's
     # initial Calendar on object creation
+
+class TimeObjectSchemeCreate(TimeObjectScheme):
     calendar_id: Optional[str]
 
 

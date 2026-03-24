@@ -161,7 +161,7 @@ class CalendarService(CoreServiceBase):
 
     async def get_month_data(self, user_id: str) -> ObjectsMonthData:
         curr_datetime = datetime.now()
-        objects = await self._PostgreService.get_by_range(
+        objects = await self._PostgreService.get_time_objects_by_range(
             user_id=user_id,
             curr_datetime=curr_datetime,
             timerange=TimeLineEnum.MONTH,
@@ -177,11 +177,13 @@ class CalendarService(CoreServiceBase):
                 day_objects.events.append(
                     EventSchemeOut(
                         name=object.name,
-                        description=object.description,
+                        description=object.additional_description,
                         start_date=object.start_date,
                         end_date=object.end_date,
-                        calendar=CalendarScheme.model_validate(
-                            object.calendar, from_attributes=True
+                        calendar=CalendarScheme(
+                            calendar_id=object.calendar.calendar_id,
+                            name=object.calendar.name,
+                            color=object.calendar.color
                         ),
                     )
                 )
@@ -189,11 +191,13 @@ class CalendarService(CoreServiceBase):
                 day_objects.tasks.append(
                     TaskSchemeOut(
                         name=object.name,
-                        description=object.description,
+                        description=object.additional_description,
                         start_date=object.start_date,
                         end_date=object.end_date,
-                        calendar=CalendarScheme.model_validate(
-                            object.calendar, from_attributes=True
+                        calendar=CalendarScheme(
+                            calendar_id=object.calendar.calendar_id,
+                            name=object.calendar.name,
+                            color=object.calendar.color
                         ),
                         completed=object.completed,
                     )
@@ -211,7 +215,7 @@ class CalendarService(CoreServiceBase):
                             year=curr_datetime.year,
                             month=curr_datetime.month,
                             day=month_day,
-                        ).weekday
+                        ).weekday()
                     ),
                     special_events=[],
                     objects=objects,

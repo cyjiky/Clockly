@@ -46,7 +46,7 @@ class Tasks(Base):  # - названия заметок
         ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
     calendar: Mapped[Calendars | None] = relationship(
-        "Calendars", back_populates="tasks"
+        "Calendars", back_populates="tasks", lazy="selectin"
     )
 
     completed: Mapped[bool] = mapped_column(default=False)
@@ -64,6 +64,8 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
 
+    compatibility: Mapped[bool] = mapped_column(default=True)    
+
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
     )
@@ -71,7 +73,7 @@ class Events(Base):  # - задачи (к заметкам дополнител�
         ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
     calendar: Mapped[Calendars | None] = relationship(
-        "Calendars", back_populates="events"
+        "Calendars", back_populates="events", lazy="selectin"
     )
 
     def __repr__(self) -> str:

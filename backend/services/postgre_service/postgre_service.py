@@ -127,7 +127,7 @@ class PostgreService:
 
         return res.scalars().one_or_none()
 
-    async def get_by_range(
+    async def get_time_objects_by_range(
         self, user_id: str, curr_datetime: datetime, timerange: TimeLineEnum
     ) -> List[Events | Tasks]:
         start_date, end_date = map_nearest_range(
@@ -146,11 +146,10 @@ class PostgreService:
             Tasks.start_date <= end_date,
         )
 
-        union_stmt = union_all(stmt1, stmt2)
+        result_events = (await self.__sesion.execute(stmt1)).scalars().all()
+        result_tasks = (await self.__sesion.execute(stmt2)).scalars().all()
 
-        result = await self.__sesion.execute(select(union_stmt))
-
-        return result.scalars().all()
+        return result_events + result_tasks
 
 
 # Юзера по его юзернейму

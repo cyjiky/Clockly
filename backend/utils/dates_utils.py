@@ -27,10 +27,10 @@ def map_nearest_range(
             curr_year = curr_date.year
             curr_month = curr_date.month
             curr_days_passed = curr_date.day
-            n_days = calendar.monthrange(curr_year, curr_month)
+            n_days = calendar.monthrange(curr_year, curr_month)[1]
 
             return datetime.datetime(
                 year=curr_date.year, month=curr_date.month, day=1
-            ), curr_date.date + datetime.timedelta(
+            ), curr_date.date() + datetime.timedelta(
                 days=n_days - curr_days_passed
             )
