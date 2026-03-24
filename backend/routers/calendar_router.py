@@ -136,7 +136,7 @@ async def unfulfilled_tasks(
     task_id: str,
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends)
-) -> UnfulfilledTasksResponse:  # TODO
+):  # TODO
     calendar_service = await CalendarService.create(postgres_session)
 
     # No need to commit data to the database

@@ -71,7 +71,7 @@ class Events(Base):  # - задачи (к заметкам дополнител�
         ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
     calendar: Mapped[Calendars | None] = relationship(
-        "Calendars", back_populates="tasks"
+        "Calendars", back_populates="events"
     )
 
     def __repr__(self) -> str:

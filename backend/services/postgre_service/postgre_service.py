@@ -28,6 +28,13 @@ class PostgreService:
     async def create_model(self, Model: M, **kwargs) -> M:
         return Model(**kwargs)
 
+    async def get_user_by_id(self, user_id: str) -> Users | None:
+        res = await self.__sesion.execute(
+            select(Users).where(Users.user_id == user_id)
+        )
+
+        return res.scalars().one_or_none()
+
     async def get_user_by_username(self, username: str) -> Users | None:
         res = await self.__sesion.execute(
             select(Users).where(Users.username == username)
