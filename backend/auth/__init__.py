@@ -1,2 +1,2 @@
-from .jwt_handlers import *
+from .jwt_utils import *
 from .password_handlers import *

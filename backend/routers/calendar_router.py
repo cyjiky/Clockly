@@ -14,10 +14,15 @@ calendar = APIRouter()
 # async def summary_task(start_time: str, end_time: str):
 #     pass
 
-@calendar.get("/object/")
-async def get_month_data(
+
+@calendar.get("/object/{year}/{month}/{day}/{data_range}")
+async def get_data_by_range(
+    year: int,
+    month: int,
+    day: int,
+    data_range: TimeLineEnum,
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> ObjectsMonthData:
     calendar_service = await CalendarService.create(postgres_session)
 
@@ -25,11 +30,16 @@ async def get_month_data(
     # Nothing changes
     try:
         user = await merge_model(user_, postgres_session)
-        return await calendar_service.get_month_data(
-            user_id=user.user_id
+        return await calendar_service.get_data_by_range(
+            user_id=user.user_id,
+            year=year,
+            month=month,
+            day=day,
+            data_range=data_range,
         )
     except Exception as e:
         raise e from e
+
 
 @calendar.post("/object/{time_object_type}")
 async def create_time_object(
@@ -59,7 +69,7 @@ async def update_object(
     object_id: str,
     time_object_data: TimeObjectSchemeCreate = Body(...),
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> None:
     calendar_service = await CalendarService.create(postgres_session)
     try:
@@ -68,74 +78,76 @@ async def update_object(
             user_id=user.user_id,
             time_object_id=object_id,
             time_object_type=time_object_type,
-            object_data=time_object_data, 
+            object_data=time_object_data,
         )
         await calendar_service.close(commit=True)
     except Exception as e:
         await calendar_service.close(commit=False)
         raise e from e
+
 
 @calendar.post("/object/{time_object_type}/delete/{object_id}")
 async def delete_object(
     time_object_type: TimeObjectsEnum,
     object_id: str,
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> None:
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)
-        await calendar_service.delete_object(
+        await calendar_service.delete_time_object(
             time_object_type=time_object_type,
             object_id=object_id,
-            user_id=user.user_id
+            user_id=user.user_id,
         )
         await calendar_service.close(commit=True)
     except Exception as e:
         await calendar_service.close(commit=False)
         raise e from e
+
 
 @calendar.post("/task/complete/{task_id}")
 async def completed_task(
     task_id: str,
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ):
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)
         await calendar_service.complete_task(
-            user_id=user.user_id,
-            task_id=task_id
+            user_id=user.user_id, task_id=task_id
         )
         await calendar_service.close(commit=True)
     except Exception as e:
         await calendar_service.close(commit=False)
         raise e from e
 
+
 @calendar.post("/task/cancel/{task_id}")
 async def cancel_task(
-    task_id: str, 
+    task_id: str,
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> None:
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)
         await calendar_service.cancel_task(
-            user_id=user.user_id,
-            task_id=task_id
+            user_id=user.user_id, task_id=task_id
         )
         await calendar_service.close(commit=True)
     except Exception as e:
         await calendar_service.close(commit=False)
         raise e from e
 
+
 @calendar.get("/task/unfulfilled/{task_id}")
 async def unfulfilled_tasks(
     task_id: str,
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ):  # TODO
     calendar_service = await CalendarService.create(postgres_session)
 
@@ -144,9 +156,23 @@ async def unfulfilled_tasks(
     try:
         user = await merge_model(user_, postgres_session)
         return await calendar_service.get_unfulfilled_tasks(
-            user_id=user.user_id,
-            task_id=task_id
+            user_id=user.user_id, task_id=task_id
         )
     except Exception as e:
         raise e from e
 
+
+@calendar.get("/calendar")
+async def get_calendars(
+    user_: Users = Depends(authorize_private_endpoint),
+    postgres_session: AsyncSession = Depends(get_session_depends),
+) -> List[CalendarScheme]:
+    calendar_service = await CalendarService.create(postgres_session)
+
+    # No need to commit data to the database
+    # Nothing changes
+    try:
+        user = await merge_model(user_, postgres_session)
+        return await calendar_service.get_calendars(user_id=user.user_id)
+    except Exception as e:
+        raise e from e

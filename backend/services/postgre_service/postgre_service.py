@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, union_all
+from sqlalchemy import select, delete
 from postgre.models import *
 from app_types import BothTaskEventEnum, TimeLineEnum
 from datetime import datetime, time
@@ -128,11 +128,11 @@ class PostgreService:
         return res.scalars().one_or_none()
 
     async def get_time_objects_by_range(
-        self, user_id: str, curr_datetime: datetime, timerange: TimeLineEnum
+        self,
+        user_id: str,
+        start_date: datetime,
+        end_date: datetime
     ) -> List[Events | Tasks]:
-        start_date, end_date = map_nearest_range(
-            curr_date=curr_datetime, timerange=timerange
-        )
 
         stmt1 = select(Events).where(
             Events.user_id == user_id,
@@ -151,6 +151,17 @@ class PostgreService:
 
         return result_events + result_tasks
 
+    async def delete_tasks(self, task_id) -> None:
+        await self.__sesion.execute(
+            delete(Tasks)
+            .where(Tasks.id == task_id)
+        )
+
+    async def delete_events(self, event_id) -> None:
+        await self.__sesion.execute(
+            delete(Events)
+            .where(Events.id == event_id)
+        )
 
 # Юзера по его юзернейму
 # Все события юзера - все / на сегодня

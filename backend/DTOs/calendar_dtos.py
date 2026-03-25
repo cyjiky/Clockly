@@ -19,6 +19,7 @@ class TimeObjectScheme(BaseModel):
     # If None, object will be assigned to user's
     # initial Calendar on object creation
 
+
 class TimeObjectSchemeCreate(TimeObjectScheme):
     calendar_id: Optional[str]
 
@@ -47,6 +48,7 @@ class SpecialEventScheme(BaseModel):
 class DayScheme(BaseModel):
     # month: int
     day_of_week_readable: str
+    month_day: int
     special_events: List[SpecialEventScheme] = Field(default=[])
     objects: BothScheme
 
