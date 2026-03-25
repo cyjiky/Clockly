@@ -10,6 +10,8 @@ from app_types import *
 from datetime import datetime
 from typing import Dict
 
+from utils import map_nearest_range, get_amount_of_month_days
+
 
 class CalendarService(CoreServiceBase):
     @staticmethod
@@ -148,31 +150,86 @@ class CalendarService(CoreServiceBase):
 
         await self._PostgreService.flush()
 
-    async def delete_task(self, user_id: str, task_id: str) -> None:
-        pass
-
-    async def delete_object(self, user_id: str, event_id: str) -> None:
-        pass
+    async def delete_time_object(
+        self, user_id: str, object_id: str, time_object_type: TimeObjectsEnum
+    ) -> None:
+        match time_object_type:
+            case TimeObjectsEnum.TASK:
+                task = await self._PostgreService.get_task_by_id(object_id)
+                if task.user_id == user_id:
+                    await self._PostgreService.delete_tasks(object_id)
+                else:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="This time object does not exist",
+                    )
+            case TimeObjectsEnum.EVENT:
+                event = await self._PostgreService.get_task_by_id(object_id)
+                if event.user_id == user_id:
+                    await self._PostgreService.delete_events(object_id)
+                else:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="This time object does not exist",
+                    )
 
     async def task_action(
         self, user_id: str, task_id: str, action: TaskActionEnum
     ) -> None:
-        pass
+        task = await self._PostgreService.get_task_by_id(task_id=task_id)
 
-    async def get_month_data(self, user_id: str) -> ObjectsMonthData:
-        curr_datetime = datetime.now()
-        objects = await self._PostgreService.get_time_objects_by_range(
-            user_id=user_id,
-            curr_datetime=curr_datetime,
-            timerange=TimeLineEnum.MONTH,
+        if not task:
+            raise HTTPException(
+                status_code=400, detail="This task does not exist"
+            )
+
+        if task.user_id != user_id:
+            raise HTTPException(
+                status_code=400, detail="This task does not exist"
+            )
+
+        match action:
+            case TaskActionEnum.COMPLETE:
+                task.completed = True
+            case TaskActionEnum.INCOMPLETE:
+                task.completed = False
+
+    # TODO: Week must return data starting off nearest monday
+    async def get_data_by_range(
+        self,
+        user_id: str,
+        year: int,
+        month: int,
+        day: int,
+        data_range: TimeLineEnum,
+    ) -> ObjectsMonthData:
+
+        curr_datetime = datetime(year=year, month=month, day=day)
+
+        start_date, end_date = map_nearest_range(
+            start_date=curr_datetime, timerange=data_range
         )
 
-        objects_by_days: Dict[int, BothScheme] = {}
+        objects = await self._PostgreService.get_time_objects_by_range(
+            user_id=user_id, start_date=start_date, end_date=end_date
+        )
+
+        curr_month_days = get_amount_of_month_days(year=year, month=month)
+
+        out_days = []
+
+        for i in range((end_date - start_date).days):
+            if start_date.day + i > curr_month_days:
+                out_days.append(i)
+            else:
+                out_days.append(start_date.day + i)
+        print(out_days)
+        objects_by_days: Dict[int, BothScheme] = dict(
+            list((day, BothScheme()) for day in out_days)
+        )
 
         for object in objects:
-            day_objects = objects_by_days.setdefault(
-                object.start_date.day, BothScheme()
-            )
+            day_objects = objects_by_days[object.start_date.day]
             if isinstance(object, Events):
                 day_objects.events.append(
                     EventSchemeOut(
@@ -183,7 +240,7 @@ class CalendarService(CoreServiceBase):
                         calendar=CalendarScheme(
                             calendar_id=object.calendar.calendar_id,
                             name=object.calendar.name,
-                            color=object.calendar.color
+                            color=object.calendar.color,
                         ),
                     )
                 )
@@ -197,7 +254,7 @@ class CalendarService(CoreServiceBase):
                         calendar=CalendarScheme(
                             calendar_id=object.calendar.calendar_id,
                             name=object.calendar.name,
-                            color=object.calendar.color
+                            color=object.calendar.color,
                         ),
                         completed=object.completed,
                     )
@@ -217,9 +274,13 @@ class CalendarService(CoreServiceBase):
                             day=month_day,
                         ).weekday()
                     ),
+                    month_day=month_day,
                     special_events=[],
                     objects=objects,
                 )
                 for month_day, objects in objects_by_days.items()
             ],
         )
+
+    async def get_calendars(user_id: str) -> List[CalendarScheme]:
+        pass

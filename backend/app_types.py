@@ -10,13 +10,10 @@ from datetime import timedelta
 
 @unique
 class TimeLineEnum(Enum):
-    DAY = timedelta(days=1)
-    THREE_DAYS = timedelta(days=3)
-    WEEK = timedelta(weeks=1)
-
-    # We need to manually calculate end of current month
-    # Because amount of days in months can range from 28 up to 31
-    MONTH = None
+    DAY = "DAY"
+    THREE_DAYS = "THREE_DAYS"
+    WEEK = "WEEK"
+    MONTH = "MONTH"
 
 
 @unique
