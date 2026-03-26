@@ -135,6 +135,14 @@ class PostgreService:
 
         return res.scalars().all()
 
+    async def get_user_calendar_by_name(self, user_id: str, calendar_name: str) -> Calendars | None:
+        res = await self.__sesion.execute(
+            select(Calendars)
+            .where(Calendars.user_id == user_id, Calendars.name == calendar_name)
+        )
+
+        return res.scalars().one_or_none()
+
     async def get_time_objects_by_range(
         self, user_id: str, start_date: datetime, end_date: datetime
     ) -> List[Events | Tasks]:

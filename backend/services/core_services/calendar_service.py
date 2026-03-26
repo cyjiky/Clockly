@@ -93,24 +93,34 @@ class CalendarService(CoreServiceBase):
                 )
 
     async def create_calendar(
-        self, user_id: str, creds: CalendarScheme
-    ) -> None:
+        self, user_id: str, calendar_data: CalendarCreate
+    ) -> CalendarScheme:
         potential_calendar = (
             await self._PostgreService.get_user_initial_calendar(
                 user_id=user_id
             )
         )
 
+        potential_existing_calendar = await self._PostgreService.get_user_calendar_by_name(
+            user_id=user_id,
+            calendar_name=calendar_data.name
+        )
+
+        if potential_existing_calendar:
+            raise HTTPException(status_code=400, detail="Calendar with this name already exists")
+
         new_calendar_id = str(uuid4())
-        new_event = Calendars(
+        new_calendar = Calendars(
             calendar_id=new_calendar_id,
-            calendar_name=creds.name,
-            color=creds.color,
+            name=calendar_data.name,
+            color=calendar_data.color,
             is_initial=False if potential_calendar else True,
             user_id=user_id,
         )
 
-        await self._PostgreService.flush_models(new_event)
+        await self._PostgreService.flush_models(new_calendar)
+
+        return CalendarScheme.model_validate(new_calendar, from_attributes=True)
 
     async def change_time_object(
         self,
