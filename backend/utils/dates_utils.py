@@ -16,11 +16,11 @@ def map_nearest_range(
 ) -> Tuple[StartDate, EndDate]:
     match timerange:
         case TimeLineEnum.DAY:
-            return datetime.combine(start_date.date(), datetime.min.time()), datetime.combine((start_date + timedelta(days=1)).date(), datetime.min.time())
+            return datetime.combine(start_date.date(), datetime.min.time()), datetime.combine((start_date).date(), datetime.max.time())
 
         case TimeLineEnum.THREE_DAYS:
             return datetime.combine(start_date.date(), datetime.min.time()), datetime.combine(
-                (start_date + timedelta(days=3)).date(), datetime.min.time()
+                (start_date + timedelta(days=2)).date(), datetime.max.time()
             )
 
         case TimeLineEnum.WEEK:
@@ -29,14 +29,13 @@ def map_nearest_range(
                 days=start_week_day
             )  # Nearest Monday
 
-            # Adding 7 days instead of 6 (because weekdays are 0 indexed), because end_date isn't inclusive
             end_week_date = start_week_date + timedelta(
-                days=7
+                days=6
             )  # Nearest Sunday
 
             return datetime.combine(
                 start_week_date.date(), datetime.min.time()
-            ), datetime.combine(end_week_date.date(), datetime.min.time())
+            ), datetime.combine(end_week_date.date(), datetime.max.time())
 
         case TimeLineEnum.MONTH:
             curr_year = start_date.year

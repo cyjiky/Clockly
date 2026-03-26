@@ -127,20 +127,28 @@ class PostgreService:
 
         return res.scalars().one_or_none()
 
+    async def get_user_calendars(self, user_id: str) -> List[Calendars]:
+        res = await self.__sesion.execute(
+            select(Calendars)
+            .where(Calendars.user_id == user_id)
+        )
+
+        return res.scalars().all()
+
     async def get_time_objects_by_range(
         self, user_id: str, start_date: datetime, end_date: datetime
     ) -> List[Events | Tasks]:
 
         stmt1 = select(Events).where(
             Events.user_id == user_id,
-            Events.start_date >= start_date,
-            Events.start_date <= end_date,
+            Events.start_date > start_date,
+            Events.start_date < end_date,
         )
 
         stmt2 = select(Tasks).where(
             Tasks.user_id == user_id,
-            Tasks.start_date >= start_date,
-            Tasks.start_date <= end_date,
+            Tasks.start_date > start_date,
+            Tasks.start_date < end_date,
         )
 
         result_events = (await self.__sesion.execute(stmt1)).scalars().all()

@@ -194,8 +194,7 @@ class CalendarService(CoreServiceBase):
             case TaskActionEnum.INCOMPLETE:
                 task.completed = False
 
-    # TODO: Week must return data starting off nearest monday
-    # TODO: 3 Days must start at given start date
+
     async def get_data_by_range(
         self,
         user_id: str,
@@ -218,15 +217,16 @@ class CalendarService(CoreServiceBase):
         curr_month_days = get_amount_of_month_days(year=year, month=month)
 
         out_days = [start_date.day]
-        
-        loop_range = (end_date - start_date).days + 1 if data_range == TimeLineEnum.MONTH else (end_date - start_date).days
+        loop_range = (end_date - start_date).days + 1
 
-        for i in range(1, loop_range):
+        # TODO
+        # IMPORTANT: May produce duplicate days, if range consists of more than one month!
+        # But with current logic, this will work as expected
+        for i in range(loop_range):
             if start_date.day + i > curr_month_days:
                 out_days.append(i)
             else:
                 out_days.append(start_date.day + i)
-
 
 
         objects_by_days: Dict[int, BothScheme] = dict(
@@ -242,11 +242,7 @@ class CalendarService(CoreServiceBase):
                         description=object.additional_description,
                         start_date=object.start_date,
                         end_date=object.end_date,
-                        calendar=CalendarScheme(
-                            calendar_id=object.calendar.calendar_id,
-                            name=object.calendar.name,
-                            color=object.calendar.color,
-                        ),
+                        calendar=CalendarScheme.model_validate(object.calendar,from_attributes=True),
                     )
                 )
             else:
@@ -256,11 +252,7 @@ class CalendarService(CoreServiceBase):
                         description=object.additional_description,
                         start_date=object.start_date,
                         end_date=object.end_date,
-                        calendar=CalendarScheme(
-                            calendar_id=object.calendar.calendar_id,
-                            name=object.calendar.name,
-                            color=object.calendar.color,
-                        ),
+                        calendar=CalendarScheme.model_validate(object.calendar,from_attributes=True),
                         completed=object.completed,
                     )
                 )
@@ -287,5 +279,9 @@ class CalendarService(CoreServiceBase):
             ],
         )
 
-    async def get_calendars(user_id: str) -> List[CalendarScheme]:
-        pass
+    async def get_calendars(self, user_id: str) -> List[CalendarScheme]:
+        calendars = await self._PostgreService.get_user_calendars(user_id=user_id)
+
+        return [
+            CalendarScheme.model_validate(calendar, from_attributes=True) for calendar in calendars
+        ]
