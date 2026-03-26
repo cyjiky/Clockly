@@ -128,10 +128,7 @@ class PostgreService:
         return res.scalars().one_or_none()
 
     async def get_time_objects_by_range(
-        self,
-        user_id: str,
-        start_date: datetime,
-        end_date: datetime
+        self, user_id: str, start_date: datetime, end_date: datetime
     ) -> List[Events | Tasks]:
 
         stmt1 = select(Events).where(
@@ -152,16 +149,13 @@ class PostgreService:
         return result_events + result_tasks
 
     async def delete_tasks(self, task_id) -> None:
-        await self.__sesion.execute(
-            delete(Tasks)
-            .where(Tasks.id == task_id)
-        )
+        await self.__sesion.execute(delete(Tasks).where(Tasks.id == task_id))
 
     async def delete_events(self, event_id) -> None:
         await self.__sesion.execute(
-            delete(Events)
-            .where(Events.id == event_id)
+            delete(Events).where(Events.id == event_id)
         )
+
 
 # Юзера по его юзернейму
 # Все события юзера - все / на сегодня

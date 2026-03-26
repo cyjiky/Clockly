@@ -195,6 +195,7 @@ class CalendarService(CoreServiceBase):
                 task.completed = False
 
     # TODO: Week must return data starting off nearest monday
+    # TODO: 3 Days must start at given start date
     async def get_data_by_range(
         self,
         user_id: str,
@@ -216,14 +217,18 @@ class CalendarService(CoreServiceBase):
 
         curr_month_days = get_amount_of_month_days(year=year, month=month)
 
-        out_days = []
+        out_days = [start_date.day]
+        
+        loop_range = (end_date - start_date).days + 1 if data_range == TimeLineEnum.MONTH else (end_date - start_date).days
 
-        for i in range((end_date - start_date).days):
+        for i in range(1, loop_range):
             if start_date.day + i > curr_month_days:
                 out_days.append(i)
             else:
                 out_days.append(start_date.day + i)
-        print(out_days)
+
+
+
         objects_by_days: Dict[int, BothScheme] = dict(
             list((day, BothScheme()) for day in out_days)
         )

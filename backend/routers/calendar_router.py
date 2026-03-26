@@ -10,11 +10,6 @@ from services import CalendarService
 calendar = APIRouter()
 
 
-# @calendar.get("/task/summary/{id}")
-# async def summary_task(start_time: str, end_time: str):
-#     pass
-
-
 @calendar.get("/object/{year}/{month}/{day}/{data_range}")
 async def get_data_by_range(
     year: int,
