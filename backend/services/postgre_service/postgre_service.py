@@ -127,23 +127,36 @@ class PostgreService:
 
         return res.scalars().one_or_none()
 
+    async def get_user_calendars(self, user_id: str) -> List[Calendars]:
+        res = await self.__sesion.execute(
+            select(Calendars)
+            .where(Calendars.user_id == user_id)
+        )
+
+        return res.scalars().all()
+
+    async def get_user_calendar_by_name(self, user_id: str, calendar_name: str) -> Calendars | None:
+        res = await self.__sesion.execute(
+            select(Calendars)
+            .where(Calendars.user_id == user_id, Calendars.name == calendar_name)
+        )
+
+        return res.scalars().one_or_none()
+
     async def get_time_objects_by_range(
-        self,
-        user_id: str,
-        start_date: datetime,
-        end_date: datetime
+        self, user_id: str, start_date: datetime, end_date: datetime
     ) -> List[Events | Tasks]:
 
         stmt1 = select(Events).where(
             Events.user_id == user_id,
-            Events.start_date >= start_date,
-            Events.start_date <= end_date,
+            Events.start_date > start_date,
+            Events.start_date < end_date,
         )
 
         stmt2 = select(Tasks).where(
             Tasks.user_id == user_id,
-            Tasks.start_date >= start_date,
-            Tasks.start_date <= end_date,
+            Tasks.start_date > start_date,
+            Tasks.start_date < end_date,
         )
 
         result_events = (await self.__sesion.execute(stmt1)).scalars().all()
@@ -152,16 +165,13 @@ class PostgreService:
         return result_events + result_tasks
 
     async def delete_tasks(self, task_id) -> None:
-        await self.__sesion.execute(
-            delete(Tasks)
-            .where(Tasks.id == task_id)
-        )
+        await self.__sesion.execute(delete(Tasks).where(Tasks.id == task_id))
 
     async def delete_events(self, event_id) -> None:
         await self.__sesion.execute(
-            delete(Events)
-            .where(Events.id == event_id)
+            delete(Events).where(Events.id == event_id)
         )
+
 
 # Юзера по его юзернейму
 # Все события юзера - все / на сегодня

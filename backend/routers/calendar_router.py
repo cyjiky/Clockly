@@ -10,11 +10,6 @@ from services import CalendarService
 calendar = APIRouter()
 
 
-# @calendar.get("/task/summary/{id}")
-# async def summary_task(start_time: str, end_time: str):
-#     pass
-
-
 @calendar.get("/object/{year}/{month}/{day}/{data_range}")
 async def get_data_by_range(
     year: int,
@@ -106,13 +101,32 @@ async def delete_object(
         await calendar_service.close(commit=False)
         raise e from e
 
+@calendar.post("/calendar")
+async def create_calendar(
+    calendar_data: CalendarCreate,
+    user_: Users = Depends(authorize_private_endpoint),
+    postgres_session: AsyncSession = Depends(get_session_depends),
+) -> CalendarScheme:
+    calendar_service = await CalendarService.create(postgres_session)
+    try:
+        user = await merge_model(user_, postgres_session)
+        out = await calendar_service.create_calendar(
+            user_id=user.user_id,
+            calendar_data=calendar_data
+        )
+        await calendar_service.close(commit=True)
+
+        return out
+    except Exception as e:
+        await calendar_service.close(commit=False)
+        raise e from e
 
 @calendar.post("/task/complete/{task_id}")
 async def completed_task(
     task_id: str,
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends),
-):
+) -> None:
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)

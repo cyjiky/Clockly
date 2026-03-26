@@ -2,11 +2,12 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
-
-class CalendarScheme(BaseModel):
-    calendar_id: str
+class CalendarCreate(BaseModel):
     name: str
-    color: str
+    color: str 
+
+class CalendarScheme(CalendarCreate):
+    calendar_id: str
 
 
 class TimeObjectScheme(BaseModel):

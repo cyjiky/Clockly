@@ -1,26 +1,3 @@
-// import { View, Text, Pressable } from 'react-native';
-// import Entypo from '@expo/vector-icons/Entypo';
-// import { BlurView } from 'expo-blur'
-
-// export default function CompletButton() {
-//     return (
-//         <View className="flex-1 items-center justify-center">
-//             <Pressable 
-//                 onPress={() => console.log('Today pressed!')}
-//                 className="rounded-full overflow-hidden shadow-lg active:opacity-70"
-//             >
-//                 <BlurView 
-//                     intensity={60}
-//                     tint="light"
-//                     className="w-16 h-16 items-center justify-center"
-//                 >
-//                     <Entypo name="check" size={28} color="black" />
-//                 </BlurView>
-//             </Pressable>
-//         </View>
-//     );
-// }
-
 import { useState } from 'react';
 import { View, Pressable } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -54,4 +31,5 @@ export default function CompleteButton() {
 
         </View>
     );
+    
 }
