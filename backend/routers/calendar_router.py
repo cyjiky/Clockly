@@ -121,17 +121,18 @@ async def create_calendar(
         await calendar_service.close(commit=False)
         raise e from e
 
-@calendar.post("/task/complete/{task_id}")
-async def completed_task(
+@calendar.post("/task/{task_id}/{action}")
+async def complete_task(
     task_id: str,
+    action: TaskActionEnum,
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> None:
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)
-        await calendar_service.complete_task(
-            user_id=user.user_id, task_id=task_id
+        await calendar_service.task_action(
+            user_id=user.user_id, task_id=task_id, action=action
         )
         await calendar_service.close(commit=True)
     except Exception as e:
