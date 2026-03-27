@@ -140,24 +140,6 @@ async def complete_task(
         raise e from e
 
 
-@calendar.post("/task/cancel/{task_id}")
-async def cancel_task(
-    task_id: str,
-    user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends),
-) -> None:
-    calendar_service = await CalendarService.create(postgres_session)
-    try:
-        user = await merge_model(user_, postgres_session)
-        await calendar_service.cancel_task(
-            user_id=user.user_id, task_id=task_id
-        )
-        await calendar_service.close(commit=True)
-    except Exception as e:
-        await calendar_service.close(commit=False)
-        raise e from e
-
-
 @calendar.get("/task/unfulfilled/{task_id}")
 async def unfulfilled_tasks(
     task_id: str,
@@ -191,3 +173,19 @@ async def get_calendars(
         return await calendar_service.get_calendars(user_id=user.user_id)
     except Exception as e:
         raise e from e
+
+@calendar.delete("/calendar/{calendar_id}")
+async def switch_calendar(
+    calendar_id: str,
+    user_: Users = Depends(authorize_private_endpoint),
+    session: AsyncSession = Depends(get_session_depends)
+) -> None:
+    pass
+
+@calendar.post("/object/switch-calendar/{new_calendar_id}")
+async def switch_calendar(
+    new_calendar_id: str,
+    user_: Users = Depends(authorize_private_endpoint),
+    session: AsyncSession = Depends(get_session_depends)
+) -> None:
+    pass

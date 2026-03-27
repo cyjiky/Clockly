@@ -84,6 +84,9 @@ class CalendarService(CoreServiceBase):
         object_type: TimeObjectsEnum,
         object_data: TimeObjectScheme,
     ) -> None:
+        if (object_data.end_date - object_data.start_date) < timedelta(minutes=1):
+            raise HTTPException(status_code=400, detail="Time object start date must be less than end date, at least one minute difference")
+
         match object_type:
             case TimeObjectsEnum.TASK:
                 await self._create_task(user_id=user_id, task_data=object_data)
@@ -166,21 +169,21 @@ class CalendarService(CoreServiceBase):
         match time_object_type:
             case TimeObjectsEnum.TASK:
                 task = await self._PostgreService.get_task_by_id(object_id)
-                if task.user_id == user_id:
+                if task and task.user_id == user_id:
                     await self._PostgreService.delete_tasks(object_id)
                 else:
                     raise HTTPException(
                         status_code=400,
-                        detail="This time object does not exist",
+                        detail="This task does not exist",
                     )
             case TimeObjectsEnum.EVENT:
-                event = await self._PostgreService.get_task_by_id(object_id)
-                if event.user_id == user_id:
+                event = await self._PostgreService.get_event_by_id(object_id)
+                if event and event.user_id == user_id:
                     await self._PostgreService.delete_events(object_id)
                 else:
                     raise HTTPException(
                         status_code=400,
-                        detail="This time object does not exist",
+                        detail="This event does not exist",
                     )
 
     async def task_action(
