@@ -55,5 +55,5 @@ class UserStatusEnum(Enum):
 
 @unique
 class TaskActionEnum(Enum):
-    COMPLETE = "COMPLETE_TASK"
-    INCOMPLETE = "INCOMPLITE_TASK"
+    COMPLETE = "complete"
+    INCOMPLETE = "incomplete"

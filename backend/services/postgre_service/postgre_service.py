@@ -165,7 +165,9 @@ class PostgreService:
         return result_events + result_tasks
 
     async def delete_tasks(self, task_id) -> None:
-        await self.__sesion.execute(delete(Tasks).where(Tasks.id == task_id))
+        await self.__sesion.execute(
+            delete(Tasks).where(Tasks.id == task_id)
+        )
 
     async def delete_events(self, event_id) -> None:
         await self.__sesion.execute(
