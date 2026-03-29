@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 from postgre.models import *
 from app_types import BothTaskEventEnum, TimeLineEnum
 from datetime import datetime, time
@@ -129,16 +129,30 @@ class PostgreService:
 
     async def get_user_calendars(self, user_id: str) -> List[Calendars]:
         res = await self.__sesion.execute(
-            select(Calendars)
-            .where(Calendars.user_id == user_id)
+            select(Calendars).where(Calendars.user_id == user_id)
         )
 
         return res.scalars().all()
 
-    async def get_user_calendar_by_name(self, user_id: str, calendar_name: str) -> Calendars | None:
+    async def get_user_calendar_by_name(
+        self, user_id: str, calendar_name: str
+    ) -> Calendars | None:
         res = await self.__sesion.execute(
-            select(Calendars)
-            .where(Calendars.user_id == user_id, Calendars.name == calendar_name)
+            select(Calendars).where(
+                Calendars.user_id == user_id, Calendars.name == calendar_name
+            )
+        )
+
+        return res.scalars().one_or_none()
+
+    async def get_calendar_by_id(
+        self, user_id: str, calendar_id: str
+    ) -> Calendars | None:
+        res = await self.__sesion.execute(
+            select(Calendars).where(
+                Calendars.user_id == user_id,
+                Calendars.calendar_id == calendar_id,
+            )
         )
 
         return res.scalars().one_or_none()
@@ -164,16 +178,54 @@ class PostgreService:
 
         return result_events + result_tasks
 
-    async def delete_tasks(self, task_id) -> None:
+    async def delete_task(self, user_id: str, task_id: str) -> None:
         await self.__sesion.execute(
-            delete(Tasks).where(Tasks.id == task_id)
+            delete(Tasks)
+            .where(Tasks.id == task_id)
         )
 
-    async def delete_events(self, event_id) -> None:
+    async def delete_event(self, user_id: str, event_id: str) -> None:
         await self.__sesion.execute(
-            delete(Events).where(Events.id == event_id)
+            delete(Events)
+            .where(Events.id == event_id, Events.user_id == user_id)
         )
 
+    async def delete_calendar(self, user_id: str, calendar_id: str) -> None:
+        """This function won't delete user's initial calendar"""
+
+        await self.__sesion.execute(
+            delete(Calendars)
+            .where(
+                Calendars.calendar_id == calendar_id,
+                Calendars.user_id == user_id,
+                Calendars.is_initial == False # Initial calendar must NOT be deleted
+            )
+        )
+
+    async def delete_calendar_time_objects(self, user_id: str, calendar_id: str) -> None:
+        await self.__sesion.execute(
+            delete(Events)
+            .where(Events.user_id == user_id, Events.calendar_id == calendar_id)
+        )
+
+        await self.__sesion.execute(
+            delete(Tasks)
+            .where(Tasks.user_id == user_id, Tasks.calendar_id == calendar_id)
+        )
+
+
+    async def remove_time_objects_calendar(self, user_id: str, calendar_id: str):
+        await self.__sesion.execute(
+            update(Events.__table__) # https://stackoverflow.com/questions/2631935/sqlalchemy-a-better-way-for-update-with-declarative
+            .where(Events.user_id == user_id, Events.calendar_id == calendar_id)
+            .values(calendar_id=None)
+        )
+
+        await self.__sesion.execute(
+            update(Tasks.__table__)
+            .where(Tasks.user_id == user_id, Tasks.calendar_id == calendar_id)
+            .values(calendar_id=None)
+        )
 
 # Юзера по его юзернейму
 # Все события юзера - все / на сегодня
