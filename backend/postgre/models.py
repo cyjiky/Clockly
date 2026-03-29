@@ -22,6 +22,8 @@ class Users(Base):
     create_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     password_hash = Mapped[str]
 
+    birthday: Mapped[datetime | None] = mapped_column(default=None)
+
     tasks: Mapped[List[Tasks]] = relationship("Tasks")
     events: Mapped[List[Events]] = relationship("Events")
     calendars: Mapped[List[Calendars]] = relationship("Calendars")
@@ -42,7 +44,7 @@ class Tasks(Base):  # - названия заметок
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
     )
-    calendar_id: Mapped[str] = mapped_column(
+    calendar_id: Mapped[str | None] = mapped_column(
         ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
     calendar: Mapped[Calendars | None] = relationship(
@@ -69,7 +71,7 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
     )
-    calendar_id: Mapped[str] = mapped_column(
+    calendar_id: Mapped[str | None] = mapped_column(
         ForeignKey("calendars.calendar_id", ondelete="SET NULL")
     )
     calendar: Mapped[Calendars | None] = relationship(

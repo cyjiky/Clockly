@@ -21,17 +21,33 @@ class TimeObjectScheme(BaseModel):
     # initial Calendar on object creation
 
 
-class TimeObjectSchemeCreate(TimeObjectScheme):
+class TimeObjectSchemeCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+    start_date: datetime
+    end_date: datetime
+
+    calendar_id: Optional[str] # If None, object will be assigned to user's initial calendar
+
+
+class TimeObjectSchemeUpdate(BaseModel):
+    name: Optional[str]
+    description: Optional[str] = None
+
+    start_date: Optional[datetime]
+    end_date: Optional[datetime]
+
     calendar_id: Optional[str]
 
 
 class TaskSchemeOut(TimeObjectScheme):
     completed: bool
-    calendar: CalendarScheme
+    calendar: Optional[CalendarScheme]
 
 
 class EventSchemeOut(TimeObjectScheme):
-    calendar: CalendarScheme
+    calendar: Optional[CalendarScheme] 
 
 
 class BothScheme(BaseModel):

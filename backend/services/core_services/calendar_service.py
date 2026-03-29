@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from DTOs import *  # Optional
 from services import CoreServiceBase
-from postgre import Tasks, Events, Users, Calendars
+from postgre import Tasks, Events, Calendars
 from app_types import *
 
 from datetime import datetime
@@ -26,6 +26,10 @@ class CalendarService(CoreServiceBase):
             "Sunday",
         ]
         return weekdays[weekday % 7]
+
+    @staticmethod
+    def _validate_start_end_date(start_date: datetime, end_date: datetime) -> bool:
+        return (end_date - start_date) > timedelta(minutes=1)
 
     async def _define_calendar_id(
         self, provided_calendar_id: str | None, user_id: str
@@ -84,7 +88,7 @@ class CalendarService(CoreServiceBase):
         object_type: TimeObjectsEnum,
         object_data: TimeObjectScheme,
     ) -> None:
-        if (object_data.end_date - object_data.start_date) < timedelta(minutes=1):
+        if not self._validate_start_end_date(start_date=object_data.start_date, end_date=object_data.end_date):
             raise HTTPException(status_code=400, detail="Time object start date must be less than end date, at least one minute difference")
 
         match object_type:
@@ -129,7 +133,7 @@ class CalendarService(CoreServiceBase):
         self,
         user_id: str,
         time_object_id: str,
-        time_object_data: TimeObjectScheme,
+        time_object_data: TimeObjectSchemeUpdate,
         time_object_type: TimeObjectsEnum,
     ) -> None:
 
@@ -144,22 +148,30 @@ class CalendarService(CoreServiceBase):
                 )
 
         if not time_object:
-            raise ValueError(
-                f"{time_object_type.value.title()} with id {time_object_id} not found"
+            raise HTTPException(
+                status_code=400,
+                detail=f"{time_object_type.value.title()} with id {time_object_id} not found"
             )
 
         if time_object.user_id != user_id:
             raise HTTPException(status_code=401, detail="Unauthorized")
 
-        time_object.name = time_object_data.name
-        time_object.additional_description = time_object_data.description
-        time_object.start_date = time_object_data.start_date
-        time_object.end_date = time_object_data.end_date
+        updated_start_date = time_object_data.start_date or time_object.start_date
+        updated_end_date = time_object_data.end_date or time_object.end_date
 
-        # We won't change object's calendar if no calendar_id is being passed
-        # Because calendar_id is optional
+        if not self._validate_start_end_date(start_date=updated_start_date, end_date=updated_end_date):
+            raise HTTPException(status_code=400, detail="Time object start date must be less than end date, at least one minute difference")
+        
         if time_object_data.calendar_id:
-            time_object.calendar_id = time_object_data.calendar_id
+            if not await self._PostgreService.get_calendar_by_id(user_id=user_id, calendar_id=object):
+                raise HTTPException(status_code=400, detail="This calendar doesn't exist")
+
+        time_object.name = time_object_data.name or time_object.name
+        time_object.additional_description = time_object_data.description or time_object.additional_description
+        time_object.start_date = updated_start_date
+        time_object.end_date = updated_end_date
+        time_object.calendar_id = time_object_data.calendar_id or time_object.calendar_id
+
 
         await self._PostgreService.flush()
 
@@ -170,7 +182,7 @@ class CalendarService(CoreServiceBase):
             case TimeObjectsEnum.TASK:
                 task = await self._PostgreService.get_task_by_id(object_id)
                 if task and task.user_id == user_id:
-                    await self._PostgreService.delete_tasks(object_id)
+                    await self._PostgreService.delete_task(object_id)
                 else:
                     raise HTTPException(
                         status_code=400,
@@ -179,7 +191,7 @@ class CalendarService(CoreServiceBase):
             case TimeObjectsEnum.EVENT:
                 event = await self._PostgreService.get_event_by_id(object_id)
                 if event and event.user_id == user_id:
-                    await self._PostgreService.delete_events(object_id)
+                    await self._PostgreService.delete_event(object_id)
                 else:
                     raise HTTPException(
                         status_code=400,
@@ -255,7 +267,7 @@ class CalendarService(CoreServiceBase):
                         description=object.additional_description,
                         start_date=object.start_date,
                         end_date=object.end_date,
-                        calendar=CalendarScheme.model_validate(object.calendar,from_attributes=True),
+                        calendar=CalendarScheme.model_validate(object.calendar,from_attributes=True) if object.calendar else None,
                     )
                 )
             else:
@@ -265,7 +277,7 @@ class CalendarService(CoreServiceBase):
                         description=object.additional_description,
                         start_date=object.start_date,
                         end_date=object.end_date,
-                        calendar=CalendarScheme.model_validate(object.calendar,from_attributes=True),
+                        calendar=CalendarScheme.model_validate(object.calendar,from_attributes=True) if object.calendar else None,
                         completed=object.completed,
                     )
                 )
@@ -291,6 +303,11 @@ class CalendarService(CoreServiceBase):
                 for month_day, objects in objects_by_days.items()
             ],
         )
+    
+    async def get_tasks(self, user_id: str, page: int) -> any:
+        """Page must greater >= 0"""
+
+        pass
 
     async def get_calendars(self, user_id: str) -> List[CalendarScheme]:
         calendars = await self._PostgreService.get_user_calendars(user_id=user_id)
@@ -298,3 +315,18 @@ class CalendarService(CoreServiceBase):
         return [
             CalendarScheme.model_validate(calendar, from_attributes=True) for calendar in calendars
         ]
+    
+    async def delete_calendar(self, user_id: str, calendar_id: str, deletion_option: DeletionOptions) -> None:
+        calendar = await self._PostgreService.get_calendar_by_id(user_id=user_id, calendar_id=calendar_id)
+
+        if not calendar:
+            raise HTTPException(status_code=400, detail="This calendar doesn't exist")
+        
+        if calendar.is_initial:
+            raise HTTPException(status_code=400, detail="You can't delete initial calendar!")
+
+        match deletion_option:
+            case DeletionOptions.CASCADE:
+                await self._PostgreService.delete_calendar_time_objects(user_id=user_id, calendar_id=calendar_id)
+            case DeletionOptions.SET_NULL:
+                await self._PostgreService.remove_time_objects_calendar(user_id=user_id, calendar_id=calendar_id)

@@ -7,20 +7,17 @@ type TypeJWT = Literal["access", "refresh"]
 import typing
 from datetime import timedelta
 
+"""
+All Enums contain user-readable URL friendly values,
+this allows to use these Enums in endpoint PATH parameters
+"""
 
 @unique
 class TimeLineEnum(Enum):
-    DAY = "DAY"
-    THREE_DAYS = "THREE_DAYS"
-    WEEK = "WEEK"
-    MONTH = "MONTH"
-
-
-@unique
-class EventEnum(Enum):
-    TASK_CREATED = "TASK_CREATED"
-    TASK_UPDATED = "TASK_UPDATED"
-    TASK_DELETED = "TASK_DELETED"
+    DAY = "day"
+    THREE_DAYS = "three-days"
+    WEEK = "week"
+    MONTH = "month"
 
 
 @unique
@@ -40,8 +37,6 @@ class BothTaskEventEnum(Enum):
 
 @unique
 class TimeObjectsEnum(Enum):
-    "Contains user-readable values"
-
     TASK = "Task"
     EVENT = "Event"
 
@@ -57,3 +52,8 @@ class UserStatusEnum(Enum):
 class TaskActionEnum(Enum):
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
+
+@unique
+class DeletionOptions(Enum):
+    CASCADE = "cascade"
+    SET_NULL = "set-null"
