@@ -18,7 +18,7 @@ async def get_data_by_range(
     data_range: TimeLineEnum,
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends),
-) -> ObjectsMonthData:
+) -> ObjectsRangeData:
     calendar_service = await CalendarService.create(postgres_session)
 
     # No need to commit data to the database
@@ -101,6 +101,7 @@ async def delete_object(
         await calendar_service.close(commit=False)
         raise e from e
 
+
 @calendar.post("/calendar")
 async def create_calendar(
     calendar_data: CalendarCreate,
@@ -111,8 +112,7 @@ async def create_calendar(
     try:
         user = await merge_model(user_, postgres_session)
         out = await calendar_service.create_calendar(
-            user_id=user.user_id,
-            calendar_data=calendar_data
+            user_id=user.user_id, calendar_data=calendar_data
         )
         await calendar_service.close(commit=True)
 
@@ -120,6 +120,7 @@ async def create_calendar(
     except Exception as e:
         await calendar_service.close(commit=False)
         raise e from e
+
 
 @calendar.post("/task/{task_id}/{action}")
 async def task_action(
@@ -144,14 +145,15 @@ async def task_action(
 async def get_tasks(
     page: int = Path(..., ge=0.0),
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
-) -> any: # TODO
+    postgres_session: AsyncSession = Depends(get_session_depends),
+) -> None:  # TODO
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)
         await calendar_service.get_tasks(user_id=user.user_id, page=page)
     except Exception as e:
-        raise e from e    
+        raise e from e
+
 
 @calendar.get("/calendar")
 async def get_calendars(
@@ -168,20 +170,20 @@ async def get_calendars(
     except Exception as e:
         raise e from e
 
+
 @calendar.delete("/calendar/{calendar_id}")
 async def delete_calendar(
     calendar_id: str,
     deletion_option: DeletionOptions = DeletionOptions.SET_NULL,
     user_: Users = Depends(authorize_private_endpoint),
-    postgres_session: AsyncSession = Depends(get_session_depends)
+    postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> None:
     calendar_service = await CalendarService.create(postgres_session)
 
     try:
         user = await merge_model(user_, postgres_session)
         await calendar_service.delete_calendar(
-            user_id=user.user_id,
-            calendar_id=calendar_id
+            user_id=user.user_id, calendar_id=calendar_id
         )
         await calendar_service.close(commit=True)
     except Exception as e:

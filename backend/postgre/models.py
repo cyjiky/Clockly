@@ -93,6 +93,8 @@ class Calendars(Base):
     # If is_initial set to True, this calendar shouldn't be deleted
     is_initial: Mapped[bool] = mapped_column(default=False)
 
+    scoring: Mapped[bool] = mapped_column()
+
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
     )

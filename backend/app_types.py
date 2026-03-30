@@ -4,20 +4,31 @@ from enum import Enum, unique
 type AppRunningMode = Literal["prod", "test"]
 type TypeJWT = Literal["access", "refresh"]
 
-import typing
-from datetime import timedelta
 
 """
 All Enums contain user-readable URL friendly values,
 this allows to use these Enums in endpoint PATH parameters
 """
 
-@unique
+
 class TimeLineEnum(Enum):
     DAY = "day"
     THREE_DAYS = "three-days"
     WEEK = "week"
     MONTH = "month"
+
+
+@unique
+class VisualizationTimeLineEnum(Enum):
+    DAY = "day"
+    CURRENT_WEEK = "week"
+    MONTH = "month"
+
+
+@unique
+class HeatMapTimeLineEnum(Enum):
+    MONTH = "month"
+    YEAR = "year"
 
 
 @unique
@@ -52,6 +63,7 @@ class UserStatusEnum(Enum):
 class TaskActionEnum(Enum):
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
+
 
 @unique
 class DeletionOptions(Enum):

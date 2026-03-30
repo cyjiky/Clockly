@@ -2,9 +2,11 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
+
 class CalendarCreate(BaseModel):
     name: str
-    color: str 
+    color: str
+
 
 class CalendarScheme(CalendarCreate):
     calendar_id: str
@@ -28,7 +30,9 @@ class TimeObjectSchemeCreate(BaseModel):
     start_date: datetime
     end_date: datetime
 
-    calendar_id: Optional[str] # If None, object will be assigned to user's initial calendar
+    calendar_id: Optional[
+        str
+    ]  # If None, object will be assigned to user's initial calendar
 
 
 class TimeObjectSchemeUpdate(BaseModel):
@@ -47,7 +51,7 @@ class TaskSchemeOut(TimeObjectScheme):
 
 
 class EventSchemeOut(TimeObjectScheme):
-    calendar: Optional[CalendarScheme] 
+    calendar: Optional[CalendarScheme]
 
 
 class BothScheme(BaseModel):
@@ -70,7 +74,7 @@ class DayScheme(BaseModel):
     objects: BothScheme
 
 
-class ObjectsMonthData(BaseModel):
+class ObjectsRangeData(BaseModel):
     month: int
     year: int
     data: List[DayScheme]
