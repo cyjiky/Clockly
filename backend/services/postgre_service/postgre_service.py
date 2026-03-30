@@ -82,41 +82,52 @@ class PostgreService:
     #     )
     #     return res.scalars().all()
 
-    async def get_task_by_data(
-        self, user_id: str, _data: datetime
-    ) -> List[Tasks]:
-        if isinstance(_data, datetime):
-            _data = _data.date()
+    async def get_time_objects_by_date(
+        self, user_id: str, date: datetime, time_objects_type: BothTaskEventEnum
+    ) -> List[Tasks | Events]:
+        if isinstance(date, datetime):
+            date = date.date()
 
-        start_day = datetime.combine(_data, time.min)  # 00:00
-        end_day = datetime.combine(_data, time.max)  # 23:59
+        start_day = datetime.combine(date, time.min)  # 00:00
+        end_day = datetime.combine(date, time.max)  # 23:59
 
-        res = await self.__sesion.execute(
-            select(Tasks).where(
-                Tasks.user_id == user_id,
-                Tasks.start_date >= start_day,
-                Tasks.start_date <= end_day,
-            )
-        )
-        return res.scalars().all()
+        return await self.get_time_objects_by_range(user_id=user_id, start_date=start_day, end_date=end_day)
 
-    async def get_event_by_data(
-        self, user_id: str, _data: datetime
-    ) -> List[Events]:
-        if isinstance(_data, datetime):
-            _data = _data.date()
+    # async def get_tasks_by_date(
+    #     self, user_id: str, _date: datetime
+    # ) -> List[Tasks]:
+    #     if isinstance(_date, datetime):
+    #         _date = _date.date()
 
-        start_day = datetime.combine(_data, time.min)  # 00:00
-        end_day = datetime.combine(_data, time.max)  # 23:59
+    #     start_day = datetime.combine(_date, time.min)  # 00:00
+    #     end_day = datetime.combine(_date, time.max)  # 23:59
 
-        res = await self.__sesion.execute(
-            select(Events).where(
-                Events.user_id == user_id,
-                Events.start_date >= start_day,
-                Events.start_date <= end_day,
-            )
-        )
-        return res.scalars().all()
+    #     res = await self.__sesion.execute(
+    #         select(Tasks).where(
+    #             Tasks.user_id == user_id,
+    #             Tasks.start_date >= start_day,
+    #             Tasks.start_date <= end_day,
+    #         )
+    #     )
+    #     return res.scalars().all()
+
+    # async def get_events_by_date(
+    #     self, user_id: str, date: datetime
+    # ) -> List[Events]:
+    #     if isinstance(date, datetime):
+    #         date = date.date()
+
+    #     start_day = datetime.combine(date, time.min)  # 00:00
+    #     end_day = datetime.combine(date, time.max)  # 23:59
+
+    #     res = await self.__sesion.execute(
+    #         select(Events).where(
+    #             Events.user_id == user_id,
+    #             Events.start_date >= start_day,
+    #             Events.start_date <= end_day,
+    #         )
+    #     )
+    #     return res.scalars().all()
 
     async def get_user_initial_calendar(self, user_id: str) -> Calendars:
         res = await self.__sesion.execute(
