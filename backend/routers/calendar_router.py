@@ -189,3 +189,4 @@ async def delete_calendar(
     except Exception as e:
         await calendar_service.close(commit=True)
         raise e from e
+
