@@ -5,10 +5,16 @@ from app_types import BothTaskEventEnum, TimeLineEnum
 from datetime import datetime, time
 from utils import map_nearest_range
 
+from os import getenv
+from dotenv import load_dotenv
+
 from typing import TypeVar, List
 
 M = TypeVar("M", bound=Base)
 
+load_dotenv
+
+PAGINATION = getenv("PAGINATION")
 
 class PostgreService:
     def __init__(self, session: AsyncSession):
@@ -47,11 +53,12 @@ class PostgreService:
         )
         return res.scalars().one_or_none()
 
-    async def get_tasks_by_userId(self, user_id: str, n: int) -> Tasks | None:
-        res = await self.__sesion.execute(
-            select(Tasks).where(Tasks.user_id == user_id).limit(n)
-        )
-        return res.scalars().all()
+    async def get_tasks_by_userId(self, user_id: str, page: int) -> Tasks | None:
+        # res = await self.__sesion.execute(
+        #     select(Tasks).where(Tasks.user_id == user_id).limit(n)
+        # )
+        # return res.scalars().all()
+        pass
 
     async def get_events_by_userId(
         self, user_id: str, n: int

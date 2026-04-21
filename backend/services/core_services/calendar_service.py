@@ -248,9 +248,8 @@ class CalendarService(CoreServiceBaseSharedMethods):
             case TaskActionEnum.INCOMPLETE:
                 task.completed = False
 
-    async def get_tasks(self, user_id: str, page: int) -> any:
-        """Page must greater >= 0"""
-
+    async def get_tasks(self, user_id: str, page: int) -> List[Tasks]:
+        """Page must greater or equal 0"""
         pass
 
     async def get_calendars(self, user_id: str) -> List[CalendarScheme]:

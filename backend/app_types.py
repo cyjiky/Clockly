@@ -7,7 +7,7 @@ type TypeJWT = Literal["access", "refresh"]
 
 """
 All Enums contain user-readable URL friendly values,
-this allows to use these Enums in endpoint PATH parameters
+it allows to use these Enums in endpoint PATH parameters
 """
 
 @unique
@@ -20,7 +20,7 @@ class TimeLineEnum(Enum):
 
 @unique
 class ExtendedTimeLineEnum(Enum):
-    """Compatible with TimeLineEnum, except missing attributes"""
+    """Compatible with TimeLineEnum"""
     DAY = "day"
     THREE_DAYS = "three-days"
     WEEK = "week"
