@@ -1,9 +1,13 @@
 FROM python:3.13-slim
 
-COPY . /app
+
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+COPY pyproject.toml /app/
+
+RUN pip install --no-cache-dir .
+
+COPY . /app/
 
 EXPOSE 8000
 
