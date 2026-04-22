@@ -6,11 +6,13 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
 )
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import select
 from .models import Base
 
 from dotenv import load_dotenv
 import os
 from typing import AsyncGenerator, TypeVar
+import time
 
 load_dotenv()
 
@@ -20,6 +22,7 @@ engine: AsyncEngine = None
 
 
 async def get_async_engine(mode: AppRunningMode = APP_MODE) -> AsyncEngine:
+    global engine
     if engine:
         return engine
 
@@ -43,9 +46,19 @@ async def get_async_engine(mode: AppRunningMode = APP_MODE) -> AsyncEngine:
         f"postgresql+asyncpg://{username}:{password}@{host}:{port}/{database}"
     )
 
-    print("Initialized engine")
+    print("Initializing engine")
 
-    return create_async_engine(url)
+    for i in range(10):
+        try:
+            local_engine = create_async_engine(url)
+            async with local_engine.connect() as conn: 
+                await conn.execute(
+                    select(1)
+                )
+            return local_engine
+        except Exception:
+            print(f"{i}-th Connection to the db failed, retrying...")
+            time.sleep(1)
 
 
 async def get_async_sessionmaker(engine: AsyncEngine):

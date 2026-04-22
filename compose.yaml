@@ -1,12 +1,15 @@
 services:
   backend:
     build: ./backend
+    container_name: clockly-backend
+    depends_on:
+      - db
     ports:
       - "8000:8000"
   db: 
     container_name: clockly-db
-    hostname: clockly-db
-    image: docker.io/postgres
+    # hostname: clockly-db
+    image: postgres
     env_file:
       - backend/.env
     environment:
