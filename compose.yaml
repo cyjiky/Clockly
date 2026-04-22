@@ -5,7 +5,7 @@ services:
     depends_on:
       - db
     ports:
-      - "8000:8000"
+      - 8000:8000
   db: 
     container_name: clockly-db
     # hostname: clockly-db
@@ -13,8 +13,23 @@ services:
     env_file:
       - backend/.env
     environment:
-      - POSTGRES_USER=database
+      - POSTGRES_USER=db_user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=database 
     ports:
       - 5432:5432
+  db-ui:
+    container_name: pgadmin4
+    image: docker.io/dpage/pgadmin4:9
+    depends_on:
+      - db
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg_admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: pg_admin
+      POSTGRES_HOST: db
+      POSTGRES_DB: database
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5050:80
