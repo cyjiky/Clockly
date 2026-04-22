@@ -248,9 +248,27 @@ class CalendarService(CoreServiceBaseSharedMethods):
             case TaskActionEnum.INCOMPLETE:
                 task.completed = False
 
+    # ----- TODO ------
+
     async def get_tasks(self, user_id: str, page: int) -> List[Tasks]:
         """Page must greater or equal 0"""
-        pass
+        if page <= 0:
+            raise HTTPException(
+                status_code=400, detail="Page must be greater or equal 0"
+            )
+        try:
+            tasks = await self._PostgreService.get_tasks_by_userId(
+                user_id=user_id, page=page
+            )
+        except Exception as e:
+            raise HTTPException(status_code=404, detail="User or tasks not found")
+        
+        return [
+                Tasks.model_validate(task, from_attributes=True)
+                for task in tasks
+            ]
+
+    # -----------------
 
     async def get_calendars(self, user_id: str) -> List[CalendarScheme]:
         calendars = await self._PostgreService.get_user_calendars(

@@ -146,11 +146,11 @@ async def get_tasks(
     page: int = Path(..., ge=0.0),
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends),
-) -> None:  # TODO
+) -> List[TaskSchemeOut]:  # TODO
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)
-        await calendar_service.get_tasks(user_id=user.user_id, page=page)
+        return await calendar_service.get_tasks(user_id=user.user_id, page=page)
     except Exception as e:
         raise e from e
 

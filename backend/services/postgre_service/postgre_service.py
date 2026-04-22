@@ -54,11 +54,14 @@ class PostgreService:
         return res.scalars().one_or_none()
 
     async def get_tasks_by_userId(self, user_id: str, page: int) -> Tasks | None:
-        # res = await self.__sesion.execute(
-        #     select(Tasks).where(Tasks.user_id == user_id).limit(n)
-        # )
-        # return res.scalars().all()
-        pass
+        res = await self.__sesion.execute(
+            select(Tasks)
+            .where(Tasks.user_id == user_id)
+            .order_by(Tasks.start_date.desc())
+            .offset(page * PAGINATION)
+            .limit(PAGINATION)
+        )
+        return res.scalars().all()
 
     async def get_events_by_userId(
         self, user_id: str, n: int
