@@ -13,9 +13,9 @@ services:
     env_file:
       - backend/.env
     environment:
-      - POSTGRES_USER=db_user
-      - POSTGRES_PASSWORD=password
       - POSTGRES_DB=database 
+      - POSTGRES_USER=database
+      - POSTGRES_PASSWORD=password
     ports:
       - 5432:5432
   db-ui:
@@ -29,7 +29,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: pg_admin
       POSTGRES_HOST: db
       POSTGRES_DB: database
-      POSTGRES_USER: db_user
+      POSTGRES_USER: database
       POSTGRES_PASSWORD: password
     ports:
       - 5050:80
