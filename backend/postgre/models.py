@@ -31,7 +31,6 @@ class Users(Base):
     def __repr__(self) -> str:
         return f"User:{self.user_id=}:{self.username=}"
 
-
 class Tasks(Base):  # - названия заметок
     __tablename__ = "tasks"
 
@@ -40,6 +39,8 @@ class Tasks(Base):  # - названия заметок
     additional_description: Mapped[Optional[str]]
     start_date: Mapped[datetime] = mapped_column()
     end_date: Mapped[datetime] = mapped_column()
+
+    full_day = Mapped[bool]
 
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
@@ -65,6 +66,8 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     additional_description: Mapped[Optional[str]]
     start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
     end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+
+    full_day = Mapped[bool]
 
     compatibility: Mapped[bool] = mapped_column(default=True)
 

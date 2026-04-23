@@ -19,6 +19,8 @@ class TimeObjectScheme(BaseModel):
     start_date: datetime
     end_date: datetime
 
+    fulL_day: bool
+
     # If None, object will be assigned to user's
     # initial Calendar on object creation
 
