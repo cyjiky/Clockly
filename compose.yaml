@@ -1,11 +1,40 @@
 services:
   backend:
-    build: ./backend
+    # build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Containerfile
     container_name: clockly-backend
-    depends_on:
-      - db
     ports:
       - 8000:8000
+    volumes:
+      - ./backend:/app
+    command: 
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+  # frontend:
+  #   # build: ./frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Containerfile
+  #   container_name: clockly-frontend
+  #   ports:
+  #     - 8081:8081
+  #   depends_on:
+  #     - backend 
+  #   environment:
+  #     - BACKEND_URL=http://127.0.0.1:8000
+  #     # - BACKEND_URL=http://192.168.1.45:8000
+  #     - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.45
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   command:
+  #     # npx expo start --tunnel # Exclusive (needed ngrok) 
+  #     npx expo start -c --lan
+  #   stdin_open: true 
+  #   tty: true
   db: 
     container_name: clockly-db
     # hostname: clockly-db
