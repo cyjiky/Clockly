@@ -1,10 +1,10 @@
 services:
   backend:
-    # build: ./backend
+    container_name: clockly-backend
+    image_name: clockly-backend
     build: 
       context: ./backend
       dockerfile: Containerfile
-    container_name: clockly-backend
     ports:
       - 8000:8000
     volumes:
@@ -14,11 +14,11 @@ services:
     depends_on:
       - db
   # frontend:
-  #   # build: ./frontend
+  #   container_name: clockly-frontend
+  #   image_name: clockly-frontend
   #   build:
   #     context: ./frontend
   #     dockerfile: Containerfile
-  #   container_name: clockly-frontend
   #   ports:
   #     - 8081:8081
   #   depends_on:
