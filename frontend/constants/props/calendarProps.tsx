@@ -48,3 +48,19 @@ export interface YearProps {
     yearEnd: Date;
     months: MonthProps[];
 }
+
+export interface MonthGridProps {
+  year?: number;
+  month?: number;
+  onDayPress?: (day: number) => void;
+}
+
+export interface MonthNavigationListProps {
+  year?: number;
+  onDayPress?: (day: number, month: number, year: number) => void;
+}
+
+export interface CalendarYearListProps {
+  years?: number[];
+  onMonthPress?: (month: number, year: number) => void;
+}
