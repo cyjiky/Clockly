@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native';
+import MonthNavigation from '@/components/MonthView/monthNavigation';
 
 export default function SearchButton() {
   return (
@@ -6,6 +7,8 @@ export default function SearchButton() {
         <Text className="text-black text-2xl font-extrabold tracking-widest text-center">
             Search Button!
         </Text>
+        
+        <MonthNavigation />
     </View>
   );
 }
