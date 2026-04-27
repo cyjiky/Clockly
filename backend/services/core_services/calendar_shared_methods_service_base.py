@@ -12,6 +12,42 @@ from postgre import Tasks, Events, Users
 
 
 class CoreServiceBaseSharedMethods(CoreServiceBase):
+    @staticmethod
+    def _append_correct_time_object(objects: BothScheme, object: Events | Tasks) -> None:
+            if isinstance(object, Events):
+                objects.events.append(
+                    EventSchemeOut(
+                        name=object.name,
+                        description=object.additional_description,
+                        start_date=object.start_date,
+                        end_date=object.end_date,
+                        calendar=(
+                            CalendarScheme.model_validate(
+                                object.calendar, from_attributes=True
+                            )
+                            if object.calendar
+                            else None
+                        ),
+                    )
+                )
+            else:
+                objects.tasks.append(
+                    TaskSchemeOut(
+                        name=object.name,
+                        description=object.additional_description,
+                        start_date=object.start_date,
+                        end_date=object.end_date,
+                        calendar=(
+                            CalendarScheme.model_validate(
+                                object.calendar, from_attributes=True
+                            )
+                            if object.calendar
+                            else None
+                        ),
+                        completed=object.completed,
+                    )
+                )
+
     async def get_data_by_range(
         self,
         user_id: str,
@@ -72,41 +108,13 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
                 for date_tuple in _2_digit_days_in_range:
                     if actual_start <= datetime(year=date_tuple[0], month=date_tuple[1], day=date_tuple[2]) <= actual_end:
                         day_object = objects_by_days.get(date_tuple)
-                        getattr(day_object, "events" if isinstance(object, Events) else "tasks").append(object)
+                        
+                    self._append_correct_time_object(day_object, object)
 
             else:
                 object_start_date = object.start_date
                 day_object = objects_by_days.get((object_start_date.year, object_start_date.month, object_start_date.day))
-                getattr(day_object, "events" if isinstance(object, Events) else "tasks").append(object)
-
-            #             EventSchemeOut(
-            #                 name=object.name,
-            #                 description=object.additional_description,
-            #                 start_date=object.start_date,
-            #                 end_date=object.end_date,
-            #                 calendar=(
-            #                     CalendarScheme.model_validate(
-            #                         object.calendar, from_attributes=True
-            #                     )
-            #                     if object.calendar
-            #                     else None
-            #                 ),
-            #             )
-                
-            #         TaskSchemeOut(
-            #             name=object.name,
-            #             description=object.additional_description,
-            #             start_date=object.start_date,
-            #             end_date=object.end_date,
-            #             calendar=(
-            #                 CalendarScheme.model_validate(
-            #                     object.calendar, from_attributes=True
-            #                 )
-            #                 if object.calendar
-            #                 else None
-            #             ),
-            #             completed=object.completed,
-            #         )
+                self._append_correct_time_object(day_object, object)
 
         return ObjectsRangeData(
             month=curr_datetime.month,
