@@ -14,20 +14,21 @@ def get_amount_of_month_days(year: int, month: int) -> int:
 def map_nearest_range(
     date: datetime, timerange: ExtendedTimeLineEnum
 ) -> Tuple[StartDate, EndDate]:
-    match timerange:
-        case ExtendedTimeLineEnum.DAY:
+    
+    match timerange.value:
+        case ExtendedTimeLineEnum.DAY.value:
             return datetime.combine(
                 date.date(), datetime.min.time()
             ), datetime.combine((date).date(), datetime.max.time())
 
-        case ExtendedTimeLineEnum.THREE_DAYS:
+        case ExtendedTimeLineEnum.THREE_DAYS.value:
             return datetime.combine(
                 date.date(), datetime.min.time()
             ), datetime.combine(
                 (date + timedelta(days=2)).date(), datetime.max.time()
             )
 
-        case ExtendedTimeLineEnum.WEEK:
+        case ExtendedTimeLineEnum.WEEK.value:
             start_week_day = date.weekday()
             start_week_date = date - timedelta(
                 days=start_week_day
@@ -41,7 +42,7 @@ def map_nearest_range(
                 start_week_date.date(), datetime.min.time()
             ), datetime.combine(end_week_date.date(), datetime.max.time())
 
-        case ExtendedTimeLineEnum.MONTH:
+        case ExtendedTimeLineEnum.MONTH.value:
             curr_year = date.year
             curr_month = date.month
 
@@ -51,7 +52,7 @@ def map_nearest_range(
                 year=curr_year, month=curr_month, day=month_n_days
             )
 
-        case ExtendedTimeLineEnum.YEAR:
+        case ExtendedTimeLineEnum.YEAR.value:
             curr_year = date.year
 
             return datetime(year=curr_year, month=1, day=1), datetime(year=2027, month=12, day=31)

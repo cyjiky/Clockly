@@ -44,6 +44,8 @@ class TimeObjectSchemeUpdate(BaseModel):
     start_date: Optional[datetime]
     end_date: Optional[datetime]
 
+    full_day: bool
+
     calendar_id: Optional[str]
 
 

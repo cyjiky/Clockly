@@ -1,10 +1,12 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 from services import CoreServiceBase
 
 from app_types import *
 from DTOs.calendar_dtos import *
 from utils import map_nearest_range, get_amount_of_month_days
+from datetime import datetime, timedelta
+
 
 from postgre import Tasks, Events, Users
 
@@ -31,7 +33,8 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
 
         curr_month_days = get_amount_of_month_days(year=year, month=month)
 
-        out_days = [start_date.day]
+        # Tuple[int, int] -> year, month, day
+        out_days: List[Tuple[int, int, int]] = [(start_date.month, start_date.day)]
         loop_range = (end_date - start_date).days + 1
 
         # TODO
@@ -39,51 +42,71 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         # But with current logic, this will work as expected
         for i in range(loop_range):
             if start_date.day + i > curr_month_days:
-                out_days.append(i)
+                out_days.append((start_date.month+1, i))
             else:
-                out_days.append(start_date.day + i)
+                out_days.append((start_date.month, start_date.day + i))
 
-        objects_by_days: Dict[int, BothScheme] = dict(
-            list((day, BothScheme()) for day in out_days)
+        # Tuple[int, int] -> year, month, day
+        objects_by_days: Dict[Tuple[int, int, int], BothScheme] = dict(
+            list((month_and_day, BothScheme()) for month_and_day in out_days)
         )
 
-        for object in objects:
-            day_objects = objects_by_days[object.start_date.day]
-            if isinstance(object, Events):
-                day_objects.events.append(
-                    EventSchemeOut(
-                        name=object.name,
-                        description=object.additional_description,
-                        start_date=object.start_date,
-                        end_date=object.end_date,
-                        calendar=(
-                            CalendarScheme.model_validate(
-                                object.calendar, from_attributes=True
-                            )
-                            if object.calendar
-                            else None
-                        ),
-                    )
-                )
-            else:
-                day_objects.tasks.append(
-                    TaskSchemeOut(
-                        name=object.name,
-                        description=object.additional_description,
-                        start_date=object.start_date,
-                        end_date=object.end_date,
-                        calendar=(
-                            CalendarScheme.model_validate(
-                                object.calendar, from_attributes=True
-                            )
-                            if object.calendar
-                            else None
-                        ),
-                        completed=object.completed,
-                    )
-                )
+        # Tuple[int, int] -> year, month, day
+        _2_digit_days_in_range: List[Tuple[int, int, int]] = []
 
-            objects_by_days[object.start_date.day] = day_objects
+        while start_date <= end_date:
+            _2_digit_days_in_range.append((start_date.month, start_date.date))
+            start_date += timedelta(days=1)
+
+        print(objects_by_days)
+        print(_2_digit_days_in_range)
+
+
+        for object in objects:
+            if object.full_day:
+
+                # range intersection
+                actual_start = max(object.start_date, start_date)
+                actual_end = min(object.end_date, end_date)
+
+                for date_tuple in _2_digit_days_in_range:
+                    if actual_start <= datetime(year=date_tuple[0], month=date_tuple[1], day=date_tuple[2]) <= actual_end:
+                        day_object = objects_by_days.get(date_tuple)
+                        getattr(day_object, "events" if isinstance(object, Events) else "tasks").append(object)
+
+            else:
+                object_start_date = object.start_date
+                day_object = objects_by_days.get((object_start_date.year, object_start_date.month, object_start_date.day))
+                getattr(day_object, "events" if isinstance(object, Events) else "tasks").append(object)
+
+            #             EventSchemeOut(
+            #                 name=object.name,
+            #                 description=object.additional_description,
+            #                 start_date=object.start_date,
+            #                 end_date=object.end_date,
+            #                 calendar=(
+            #                     CalendarScheme.model_validate(
+            #                         object.calendar, from_attributes=True
+            #                     )
+            #                     if object.calendar
+            #                     else None
+            #                 ),
+            #             )
+                
+            #         TaskSchemeOut(
+            #             name=object.name,
+            #             description=object.additional_description,
+            #             start_date=object.start_date,
+            #             end_date=object.end_date,
+            #             calendar=(
+            #                 CalendarScheme.model_validate(
+            #                     object.calendar, from_attributes=True
+            #                 )
+            #                 if object.calendar
+            #                 else None
+            #             ),
+            #             completed=object.completed,
+            #         )
 
         return ObjectsRangeData(
             month=curr_datetime.month,

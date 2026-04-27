@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, update
+from sqlalchemy import select, delete, update, or_
 from postgre.models import *
 from app_types import BothTaskEventEnum, TimeLineEnum
 from datetime import datetime, time
@@ -182,20 +182,19 @@ class PostgreService:
         self, user_id: str, start_date: datetime, end_date: datetime
     ) -> List[Events | Tasks]:
 
-        stmt1 = select(Events).where(
+        # Events query
+        event_q = select(Events).where(
             Events.user_id == user_id,
-            Events.start_date > start_date,
-            Events.start_date < end_date,
+            or_(Events.end_date >= start_date, Events.start_date >= end_date)
         )
 
-        stmt2 = select(Tasks).where(
+        tasks_q = select(Tasks).where(
             Tasks.user_id == user_id,
-            Tasks.start_date > start_date,
-            Tasks.start_date < end_date,
+            or_(Tasks.end_date >= start_date, Tasks.start_date >= end_date)
         )
 
-        result_events = (await self.__sesion.execute(stmt1)).scalars().all()
-        result_tasks = (await self.__sesion.execute(stmt2)).scalars().all()
+        result_events = (await self.__sesion.execute(event_q)).scalars().all()
+        result_tasks = (await self.__sesion.execute(tasks_q)).scalars().all()
 
         return result_events + result_tasks
 
