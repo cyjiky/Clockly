@@ -70,17 +70,19 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         curr_month_days = get_amount_of_month_days(year=year, month=month)
 
         # Tuple[int, int] -> year, month, day
-        out_days: List[Tuple[int, int, int]] = [(start_date.month, start_date.day)]
+        out_days: List[Tuple[int, int, int]] = [(start_date.year, start_date.month, start_date.day)]
         loop_range = (end_date - start_date).days + 1
 
         # TODO
         # IMPORTANT: May produce duplicate days, if range consists of more than one month!
         # But with current logic, this will work as expected
+        next_month_day = 1
         for i in range(loop_range):
             if start_date.day + i > curr_month_days:
-                out_days.append((start_date.month+1, i))
+                out_days.append((start_date.year, start_date.month+1, next_month_day))
+                next_month_day += 1
             else:
-                out_days.append((start_date.month, start_date.day + i))
+                out_days.append((start_date.year, start_date.month, start_date.day + i))
 
         # Tuple[int, int] -> year, month, day
         objects_by_days: Dict[Tuple[int, int, int], BothScheme] = dict(
@@ -91,12 +93,8 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         _2_digit_days_in_range: List[Tuple[int, int, int]] = []
 
         while start_date <= end_date:
-            _2_digit_days_in_range.append((start_date.month, start_date.date))
+            _2_digit_days_in_range.append((start_date.year, start_date.month, start_date.day))
             start_date += timedelta(days=1)
-
-        print(objects_by_days)
-        print(_2_digit_days_in_range)
-
 
         for object in objects:
             if object.full_day:
@@ -108,7 +106,7 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
                 for date_tuple in _2_digit_days_in_range:
                     if actual_start <= datetime(year=date_tuple[0], month=date_tuple[1], day=date_tuple[2]) <= actual_end:
                         day_object = objects_by_days.get(date_tuple)
-                        
+
                     self._append_correct_time_object(day_object, object)
 
             else:
@@ -123,15 +121,15 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
                 DayScheme(
                     day_of_week_readable=self.map_weekdays_to_readable(
                         datetime(
-                            year=curr_datetime.year,
-                            month=curr_datetime.month,
-                            day=month_day,
+                            year=date_tuple[0],
+                            month=date_tuple[1],
+                            day=date_tuple[2],
                         ).weekday()
                     ),
-                    month_day=month_day,
+                    month_day=date_tuple[2],
                     special_events=[],
                     objects=objects,
                 )
-                for month_day, objects in objects_by_days.items()
+                for date_tuple, objects in objects_by_days.items()
             ],
         )
