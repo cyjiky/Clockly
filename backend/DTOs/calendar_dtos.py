@@ -19,6 +19,10 @@ class TimeObjectScheme(BaseModel):
     start_date: datetime
     end_date: datetime
 
+    fulL_day: bool
+
+    fulL_day: bool
+
     calendar_id: Optional[
         str
     ] # If None, object will be assigned to user's
@@ -43,6 +47,8 @@ class TimeObjectSchemeUpdate(BaseModel):
 
     start_date: Optional[datetime]
     end_date: Optional[datetime]
+
+    full_day: bool
 
     calendar_id: Optional[str]
 

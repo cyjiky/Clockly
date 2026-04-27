@@ -9,10 +9,7 @@ from app_types import *
 
 from .calendar_shared_methods_service_base import CoreServiceBaseSharedMethods
 
-from datetime import datetime, timedelta
-from typing import Dict
-
-from utils import map_nearest_range, get_amount_of_month_days
+from datetime import datetime, timedelta, time
 
 
 class CalendarService(CoreServiceBaseSharedMethods):
@@ -60,6 +57,7 @@ class CalendarService(CoreServiceBaseSharedMethods):
             additional_description=task_data.description,
             start_date=task_data.start_date,
             end_date=task_data.end_date,
+            full_day=task_data.fulL_day,
             calendar_id=defined_calendar_id,
             user_id=user_id,
             completed=False,
@@ -80,6 +78,7 @@ class CalendarService(CoreServiceBaseSharedMethods):
             additional_description=event_data.description,
             start_date=event_data.start_date,
             end_date=event_data.end_date,
+            full_day=event_data.fulL_day,
             calendar_id=defined_calendar_id,
             user_id=user_id,
         )
@@ -100,13 +99,18 @@ class CalendarService(CoreServiceBaseSharedMethods):
                 detail="Time object start date must be less than end date, at least one minute difference",
             )
 
+        # Prunning time parts since object duration is full day
+        if object_data.fulL_day:
+            object_data.start_date = object_data.start_date.date
+            object_data.end_date = object_data.end_date.date
+
         match object_type:
             case TimeObjectsEnum.TASK:
                 await self._create_task(user_id=user_id, task_data=object_data)
             case TimeObjectsEnum.EVENT:
                 await self._create_event(
                     user_id=user_id, event_data=object_data
-                )
+                ) 
 
     async def create_calendar(
         self, user_id: str, calendar_data: CalendarCreate

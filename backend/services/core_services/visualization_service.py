@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from datetime import datetime
 
 from services import CoreServiceBase
@@ -9,40 +9,29 @@ from .calendar_shared_methods_service_base import CoreServiceBaseSharedMethods
 
 class VisualizationService(CoreServiceBaseSharedMethods):
     @staticmethod
-    def compute_scores(days: List[DayScheme]) -> None:
+    def _compute_scores(days: List[DayScheme]) -> None:
+        pass
+
+    @staticmethod
+    def _get_time_range_borders(range: VisualizationTimeLineEnum | HeatMapTimeLineEnum) -> Tuple[datetime, datetime]:
         pass
 
     async def _get_time_objects_by_range(self, user_id: str, data_range: HeatMapTimeLineEnum | VisualizationTimeLineEnum):
-        now = datetime.now()
-        return await self.get_data_by_range(
-            user_id=user_id,
-            year=now.year,
-            month=now.month,
-            day=now.day,
-            data_range=data_range
-        )    
+        start, end = self._get_time_range_borders(data_range)
+        objects = await self._PostgreService.get_time_objects_by_range(user_id=user_id, start_date=start, end_date=end)
 
     async def heat_map_by_score(self, user_id: str, data_range: HeatMapTimeLineEnum):
-        time_objects = await self._get_time_objects_by_range(
-            user_id=user_id,
-            data_range=data_range
-        )
-
+        start, end = self._get_time_range_borders(data_range)
+        objects = await self._PostgreService.get_time_objects_by_range(user_id=user_id, start_date=start, end_date=end)
 
     async def pie_by_calendar(self, user_id: str, data_range: VisualizationTimeLineEnum):
-        time_objects = await self._get_time_objects_by_range(
-            user_id=user_id,
-            data_range=data_range
-        )
+        start, end = self._get_time_range_borders(data_range)
+        objects = await self._PostgreService.get_time_objects_by_range(user_id=user_id, start_date=start, end_date=end)
 
-    async def todays_pie_by_time_objects(self, user_id: str, time_objects_type: BothTaskEventEnum):
-        now = datetime.now()
-        time_objects = await self._PostgreService.get_time_objects_by_date(
-            user_id=user_id, date=now, time_objects_type=time_objects_type
-        )
+    async def todays_pie_by_time_objects(self, user_id: str):
+        start, end = self._get_time_range_borders(TimeLineEnum.DAY)
+        objects = await self._PostgreService.get_time_objects_by_range(user_id=user_id, start_date=start, end_date=end)
 
     async def line_chart_by_score(self, user_id: str, data_range: VisualizationTimeLineEnum):
-        time_objects = await self._get_time_objects_by_range(
-            user_id=user_id,
-            data_range=data_range
-        )
+        start, end = self._get_time_range_borders(data_range)
+        objects = await self._PostgreService.get_time_objects_by_range(user_id=user_id, start_date=start, end_date=end)

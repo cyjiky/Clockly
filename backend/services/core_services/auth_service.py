@@ -124,6 +124,7 @@ class AuthService(CoreServiceBase):
             color="#4361EE",
             is_initial=True,
             user_id=new_user_id,
+            scoring=True
         )
 
         await self._PostgreService.flush_models(new_user, initial_calendar)
