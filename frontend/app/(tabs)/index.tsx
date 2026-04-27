@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import HeatMapComp from '@/components/ui/heateMapComp';
+// import HeatMapComp from '@/components/ui/heateMapComp';
 
 export default function HomeScreen() {
   return (
@@ -9,7 +9,7 @@ export default function HomeScreen() {
           Home Page!
         </Text>        
       </View>
-      <HeatMapComp />
+      {/* <HeatMapComp /> */}
     </View>
   );
 }

@@ -1,11 +1,40 @@
 services:
   backend:
-    build: ./backend
     container_name: clockly-backend
-    depends_on:
-      - db
+    image_name: clockly-backend
+    build: 
+      context: ./backend
+      dockerfile: Containerfile
     ports:
       - 8000:8000
+    volumes:
+      - ./backend:/app
+    command: 
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+  # frontend:
+  #   container_name: clockly-frontend
+  #   image_name: clockly-frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Containerfile
+  #   ports:
+  #     - 8081:8081
+  #   depends_on:
+  #     - backend 
+  #   environment:
+  #     - BACKEND_URL=http://127.0.0.1:8000
+  #     # - BACKEND_URL=http://192.168.1.45:8000
+  #     - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.45
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   command:
+  #     # npx expo start --tunnel # Exclusive (needed ngrok) 
+  #     npx expo start -c --lan
+  #   stdin_open: true 
+  #   tty: true
   db: 
     container_name: clockly-db
     # hostname: clockly-db
@@ -13,9 +42,9 @@ services:
     env_file:
       - backend/.env
     environment:
-      - POSTGRES_USER=db_user
-      - POSTGRES_PASSWORD=password
       - POSTGRES_DB=database 
+      - POSTGRES_USER=database
+      - POSTGRES_PASSWORD=password
     ports:
       - 5432:5432
   db-ui:
@@ -29,7 +58,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: pg_admin
       POSTGRES_HOST: db
       POSTGRES_DB: database
-      POSTGRES_USER: db_user
+      POSTGRES_USER: database
       POSTGRES_PASSWORD: password
     ports:
       - 5050:80

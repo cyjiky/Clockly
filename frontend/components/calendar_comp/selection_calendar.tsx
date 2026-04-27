@@ -19,7 +19,7 @@ export default function CalendarSelection() {
                     value="2"
                     color="blue"
                 />
-                </Picker>
+            </Picker>
         </View>
     )
 }
