@@ -14,11 +14,9 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           <Text className="text-5xl font-extrabold text-blue-600 mb-4 tracking-tight">
             Clockly
           </Text>
-          {/* TODO  */}
-          <Text className="text-lg text-gray-500 text-center px-4 leading-6">
+          <Text className="text-base text-gray-500 text-center px-4 leading-6">
             Welcome! To get started, create a new account or log in to an existing one 
           </Text>
-          {/* ---- */}
         </View>
 
         <View className="w-full mt-8">

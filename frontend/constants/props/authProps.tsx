@@ -1,6 +1,6 @@
 export interface JWTTokenProps {
-    access_token: string;
-    refresh_token: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 export interface WelcomeScreenProps {
@@ -12,5 +12,10 @@ export interface WelcomeScreenProps {
 export interface RegisterBodyDTO{
   username: string;
   email: string;
+  password: string;
+}
+
+export interface LoginBodyDTO {
+  username: string;
   password: string;
 }

@@ -1,6 +1,5 @@
 import { View, Text } from 'react-native';
-import WelcomeScreen from '@/components/cards/account/welcomeScreen';
-// import RegisterScreen from '@/components/cards/account/registerCard'; -> TODO 
+import AuthScreen from '@/components/cards/account/authScreen';
 
 export default function AccountScreen() {
   return (
@@ -8,8 +7,9 @@ export default function AccountScreen() {
         {/* <Text className="text-black text-2xl font-extrabold tracking-widest text-center">
             Account Page!
         </Text> */}
-        <WelcomeScreen />
-        {/* <RegisterScreen /> */}
+
+        <AuthScreen/>
+
     </View>
   );
 }
