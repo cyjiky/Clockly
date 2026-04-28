@@ -70,16 +70,16 @@ class AuthService(CoreServiceBase):
             username=creds.username
         )
 
-        if not validate_password(creds.password):
-            raise HTTPException(
-                status_code=400,
-                detail="Password isn't secure enough."
-                "At least one uppercase letter and number!",
-            )
         if not potential_user:
             raise HTTPException(
                 status_code=400,
                 detail="Such user doesn't exist, try to register first.",
+            )
+
+        if not check_password(entered_pass=creds.password, hashed_pass=potential_user.password_hash):
+            raise HTTPException(
+                status_code=401,
+                detail="Unauthorized"
             )
 
         return self._generate_auth_tokens(new_user_id=potential_user.user_id)
