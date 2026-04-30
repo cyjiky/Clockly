@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import MonthGrid from './MonthGrid';
+import MonthGrid from './monthGrid';
 import { MONTHS } from '@/constants/days';
 import { MonthNavigationListProps } from '@/constants/props/calendarProps';
 
