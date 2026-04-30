@@ -12,7 +12,8 @@ def hash_password(raw_pass: str) -> str:
 
 
 def check_password(entered_pass: str, hashed_pass: str) -> bool:
+    print(entered_pass, type(hashed_pass))
     try:
-        return bcrypt.checkpw(entered_pass.encode(), hashed_pass.endcode())
+        return bcrypt.checkpw(entered_pass.encode(), hashed_pass.encode())
     except Exception as e:
-        pass
+        return False

@@ -21,24 +21,10 @@ class TimeObjectScheme(BaseModel):
 
     fulL_day: bool
 
-    fulL_day: bool
-
     calendar_id: Optional[
         str
     ] # If None, object will be assigned to user's
     # initial Calendar on object creation
-
-
-class TimeObjectSchemeCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-
-    start_date: datetime
-    end_date: datetime
-
-    calendar_id: Optional[
-        str
-    ]  # If None, object will be assigned to user's initial calendar
 
 
 class TimeObjectSchemeUpdate(BaseModel):

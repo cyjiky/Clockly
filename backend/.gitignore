@@ -6,3 +6,4 @@ env/
 creds/
 *.pyc
 clockly_backend.egg-info/
+*.log

@@ -39,7 +39,7 @@ async def get_data_by_range(
 @calendar.post("/object/{time_object_type}")
 async def create_time_object(
     time_object_type: TimeObjectsEnum,
-    time_object_data: TimeObjectSchemeCreate,
+    time_object_data: TimeObjectScheme,
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> None:

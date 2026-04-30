@@ -99,10 +99,16 @@ class CalendarService(CoreServiceBaseSharedMethods):
                 detail="Time object start date must be less than end date, at least one minute difference",
             )
 
+        if (object_data.start_date.date != object_data.end_date.date) and object_data.fulL_day is False:
+            raise HTTPException(
+                status_code=400,
+                detail="If time object start and end dates differc, must be set full day property"
+            )
+
         # Prunning time parts since object duration is full day
         if object_data.fulL_day:
-            object_data.start_date = object_data.start_date.date
-            object_data.end_date = object_data.end_date.date
+            object_data.start_date = object_data.start_date.date()
+            object_data.end_date = object_data.end_date.date()
 
         match object_type:
             case TimeObjectsEnum.TASK:

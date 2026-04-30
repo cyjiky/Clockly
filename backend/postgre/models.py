@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy.orm import DeclarativeBase
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey, func, String
+from sqlalchemy import ForeignKey, func, String, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -20,9 +20,9 @@ class Users(Base):
     username: Mapped[str] = mapped_column(String(34))
     email: Mapped[str]
     create_date: Mapped[datetime] = mapped_column(insert_default=func.now())
-    password_hash = Mapped[str]
+    password_hash: Mapped[str]
 
-    birthday: Mapped[datetime | None] = mapped_column(default=None)
+    # birthday: Mapped[datetime] = mapped_column()
 
     tasks: Mapped[List[Tasks]] = relationship("Tasks")
     events: Mapped[List[Events]] = relationship("Events")
@@ -64,8 +64,8 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     additional_description: Mapped[Optional[str]]
-    start_date: Mapped[datetime] = mapped_column(insert_default=func.now())
-    end_date: Mapped[datetime] = mapped_column(insert_default=func.now())
+    start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=func.now())
+    end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=func.now())
 
     full_day = Mapped[bool]
 
