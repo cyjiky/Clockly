@@ -1,10 +1,7 @@
 from fastapi import HTTPException
 
-import json
 from uuid import uuid4
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-from os import getenv
 
 from DTOs import LoginBody, RegisterBody, JWTPayload, JWTsResponse
 from auth import *
@@ -12,18 +9,13 @@ from services import CoreServiceBase
 from utils import validate_email, validate_password
 from postgre import Users, Calendars
 
-load_dotenv()
-
-ACCESS_JWT_EXPIRY_SECONDS = int(getenv("ACCESS_JWT_EXPIRY_SECONDS"))
-REFRESH_JWT_EXPIRY_SECONDS = int(getenv("REFRESH_JWT_EXPIRY_SECONDS"))
-
-DATETIME_FORMAT = getenv("DATETIME_FORMAT")
+from config import settings
 
 
 class AuthService(CoreServiceBase):
     def _generate_auth_tokens(self, new_user_id: str):
         access_jwt_expiry = datetime.now() + timedelta(
-            seconds=ACCESS_JWT_EXPIRY_SECONDS
+            seconds=settings.access_jwt_expiry_seconds
         )
         access_jwt_payload = JWTPayload(
             user_id=new_user_id,
@@ -32,7 +24,7 @@ class AuthService(CoreServiceBase):
         )
 
         refresh_jwt_expiry = datetime.now() + timedelta(
-            seconds=REFRESH_JWT_EXPIRY_SECONDS
+            seconds=settings.refresh_jwt_expiry_seconds
         )
         refresh_jwt_payload = JWTPayload(
             user_id=new_user_id,
@@ -132,7 +124,7 @@ class AuthService(CoreServiceBase):
         return self._generate_auth_tokens(new_user_id=new_user_id)
 
     async def logout(self):
-        raise Exception("Method is disabled")
+        pass
 
     async def change_username(self):
         pass

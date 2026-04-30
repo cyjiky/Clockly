@@ -7,57 +7,33 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 from .models import Base
 
-from dotenv import load_dotenv
-import os
 from typing import AsyncGenerator, TypeVar
 import time
 
-load_dotenv()
-
-APP_MODE = os.getenv("APP_MODE")
+from config import settings
+from logger import logger
 
 engine: AsyncEngine = None
 
 
-async def get_async_engine(mode: AppRunningMode = APP_MODE) -> AsyncEngine:
-    global engine
-    if engine:
-        return engine
-
-    username = os.getenv(
-        "POSTGRE_PROD_USERNAME" if mode == "prod" else "POSTGRE_TEST_USERNAME"
-    )
-    password = os.getenv(
-        "POSTGRE_PROD_PASSWORD" if mode == "prod" else "POSTGRE_TEST_PASSWORD"
-    )
-    host = os.getenv(
-        "POSTGRE_PROD_HOST" if mode == "prod" else "POSTGRE_TEST_HOST"
-    )
-    database = os.getenv(
-        "POSTGRE_PROD_DATABASE_NAME" if mode == "prod" else "POSTGRE_TEST_NAME"
-    )
-    port = os.getenv(
-        "POSTGRE_PROD_PORT" if mode == "prod" else "POSTGRE_TEST_PORT"
-    )
-
-    url = (
-        f"postgresql+asyncpg://{username}:{password}@{host}:{port}/{database}"
-    )
-
+async def get_async_engine(mode: AppRunningMode = settings.app_mode) -> AsyncEngine:
     print("Initializing engine")
 
     for i in range(10):
         try:
-            local_engine = create_async_engine(url)
+            local_engine = create_async_engine(settings.get_postgres_dsn().unicode_string())
             async with local_engine.connect() as conn: 
                 await conn.execute(
                     select(1)
                 )
             return local_engine
-        except Exception:
-            print(f"{i}-th Connection to the db failed, retrying...")
+        except SQLAlchemyError as e:
+            if i == 0:
+                logger.error(msg="Connection to the db is failed on app startup", exc_info=e)
+            print(f"№{i} Connection to the db failed, retrying...")
             time.sleep(1)
 
 
@@ -77,7 +53,7 @@ async def get_session_depends() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def get_session() -> AsyncSession:
-    engine = await get_async_engine(mode=APP_MODE)
+    engine = await get_async_engine(mode=settings.app_mode)
     ready_sessionmaker = await get_async_sessionmaker(engine)
     return ready_sessionmaker()
 
