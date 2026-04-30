@@ -1,11 +1,7 @@
 import jwt
 from DTOs import JWTPayload
 
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
+from config import settings
 
 def prepare_jwt(jwt_string: str) -> str:
     return jwt_string.removeprefix("Bearer ")
@@ -15,7 +11,7 @@ def generate_jwt(payload: JWTPayload) -> str:
     return jwt.encode(
         # Set mode="json" to correctly serialize datetime objects
         payload.model_dump(mode="json"),
-        os.getenv("JWT_SECRET_KEY"),
+        settings.jwt_secret,
         algorithm="HS256",
     )
 
@@ -23,7 +19,7 @@ def generate_jwt(payload: JWTPayload) -> str:
 def extract_jwt_payload(jwt_string: str) -> JWTPayload | None:
     try:
         payload = jwt.decode(
-            jwt_string, os.getenv("JWT_SECRET_KEY"), algorithms=["HS256"]
+            jwt_string, settings.jwt_secret, algorithms=["HS256"]
         )
         return JWTPayload(**payload)
     except (jwt.exceptions.DecodeError, jwt.exceptions.InvalidKeyError):

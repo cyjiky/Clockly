@@ -1,12 +1,19 @@
 from pydantic import Field, PostgresDsn
 from pydantic_settings import BaseSettings
-from typing import Literal
+
+from app_types import AppRunningMode
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Settings(BaseSettings):
-    app_mode: Literal["prod", "test"]
+    app_mode: AppRunningMode = "prod"
 
     # auth
-    jwt_secret: str = Field(validation_alias="JWT_SECRET_KEY")
+    jwt_secret: str = Field(validation_alias="JWT_SECRET_KEY") # will be imported from .env
+    access_jwt_expiry_seconds: int = 3600
+    refresh_jwt_expiry_seconds: int = 172800
 
     # logging
     logging_filename: str = "logs.log"
@@ -20,15 +27,14 @@ class Settings(BaseSettings):
     # app
     pagination: int = 30
 
-    @classmethod
-    def get_postgres_dsn(cls) -> PostgresDsn:
+    def get_postgres_dsn(self) -> PostgresDsn:
         """Returns postgresql DSN regarding to the app_mode variable"""
 
-        match cls.app_mode: 
+        match self.app_mode: 
             case "prod":
-                return cls.postgres_dsn_prod
+                return self.postgres_dsn_prod
             case "test":
-                return cls.postgres_dsn_test
+                return self.postgres_dsn_test
 
 
 settings = Settings()
