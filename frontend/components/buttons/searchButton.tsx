@@ -6,7 +6,7 @@ export default function SearchButton() {
     return (
         <View className="flex-1 items-center justify-center">
             <Pressable 
-                onPress={() => console.log('Today pressed!')}
+                // onPress={() => console.log('Search button pressed!')}
                 className="rounded-full overflow-hidden shadow-lg active:opacity-70"
             >
                 <BlurView 
