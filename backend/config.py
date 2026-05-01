@@ -38,6 +38,8 @@ class Settings(BaseSettings):
 
     # app
     pagination: int = 30
+    
+    export_chunks_size: int = 100
 
     def get_postgres_dsn(self) -> PostgresDsn:
         """Returns postgresql DSN regarding to the app_mode variable"""
