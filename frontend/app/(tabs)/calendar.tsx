@@ -1,12 +1,14 @@
 import { View, Text } from 'react-native';
 import MonthNavigation from '@/components/MonthView/monthNavigation';
+import CalendarNavbar from '@/components/navBar/calendarNavBar';
 
 export default function SearchButton() {
   return (
-    <View className="flex-1 items-center justify-center bg-slate-100">
-        <Text className="text-black text-2xl font-extrabold tracking-widest text-center">
+    <View className="flex-1 bg-slate-100">
+      <CalendarNavbar />
+        {/* <Text className="text-black text-2xl font-extrabold tracking-widest text-center">
             Search Button!
-        </Text>
+        </Text> */}
         
         <MonthNavigation />
     </View>
