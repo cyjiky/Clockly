@@ -242,6 +242,9 @@ class PostgreService:
             .values(calendar_id=None)
         )
 
+    async def time_objects_range_generator(self, start_date: datetime, end_date: datetime):
+        pass
+
 # Юзера по его юзернейму
 # Все события юзера - все / на сегодня
 # Все задания юзера - все / на сегодня
