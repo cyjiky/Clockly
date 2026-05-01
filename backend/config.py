@@ -7,6 +7,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+"""
+Execute in console to manually run postgres docker image
+    docker run --name clockly_postgres_container
+    -e POSTGRES_USER=database
+    -e POSTGRES_PASSWORD=password
+    -e POSTGRES_DB=database
+    -p 5432:5432
+    -d postgres
+"""
+
+# TODO: refactor for best practices
+
 class Settings(BaseSettings):
     app_mode: AppRunningMode = "prod"
 
