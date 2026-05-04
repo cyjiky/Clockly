@@ -78,15 +78,6 @@ class PostgreService:
         )
         return res.scalars().one_or_none()
 
-    # async def get_task_by_data(self, user_id: str, data: datetime) -> Tasks | None:
-    #     res = await self.__sesion.execute(
-    #         select(Tasks)
-    #         .where(
-    #             Tasks.user_id == user_id,
-    #             cast(Tasks.datetime, Date) == data)
-    #     )
-    #     return res.scalars().all()
-
     async def get_time_objects_by_date(
         self, user_id: str, date: datetime, time_objects_type: BothTaskEventEnum
     ) -> List[Tasks | Events]:
@@ -97,42 +88,6 @@ class PostgreService:
         end_day = datetime.combine(date, time.max)  # 23:59
 
         return await self.get_time_objects_by_range(user_id=user_id, start_date=start_day, end_date=end_day)
-
-    # async def get_tasks_by_date(
-    #     self, user_id: str, _date: datetime
-    # ) -> List[Tasks]:
-    #     if isinstance(_date, datetime):
-    #         _date = _date.date()
-
-    #     start_day = datetime.combine(_date, time.min)  # 00:00
-    #     end_day = datetime.combine(_date, time.max)  # 23:59
-
-    #     res = await self.__sesion.execute(
-    #         select(Tasks).where(
-    #             Tasks.user_id == user_id,
-    #             Tasks.start_date >= start_day,
-    #             Tasks.start_date <= end_day,
-    #         )
-    #     )
-    #     return res.scalars().all()
-
-    # async def get_events_by_date(
-    #     self, user_id: str, date: datetime
-    # ) -> List[Events]:
-    #     if isinstance(date, datetime):
-    #         date = date.date()
-
-    #     start_day = datetime.combine(date, time.min)  # 00:00
-    #     end_day = datetime.combine(date, time.max)  # 23:59
-
-    #     res = await self.__sesion.execute(
-    #         select(Events).where(
-    #             Events.user_id == user_id,
-    #             Events.start_date >= start_day,
-    #             Events.start_date <= end_day,
-    #         )
-    #     )
-    #     return res.scalars().all()
 
     async def get_user_initial_calendar(self, user_id: str) -> Calendars:
         res = await self.__sesion.execute(
@@ -258,38 +213,3 @@ class PostgreService:
         async with self.__sesion.stream_scalars(full_stmt) as result:
             async for scalars in result:
                 yield scalars
-
-
-# Юзера по его юзернейму
-# Все события юзера - все / на сегодня
-# Все задания юзера - все / на сегодня
-# принимать параметр фильтра
-
-# отдает актуальные события или задания на сегодня
-
-
-# async def get_user_by_id(self, user_id: str) -> User | None:
-#     result = await self.__session.execute(
-#         select(User)
-#         .options(selectinload(User.followed), selectinload(User.followers))
-#         .where(User.user_id == user_id)
-#     )
-#     return result.scalar()
-
-
-# async def get_fresh_followedposts(self, user: User, n: int) -> List[Post]:
-#     result = await  self.__session.execute(
-#         select(Post)
-#         .where(Post.owner.in((user.followed)))
-#         .order_by(Post.published.desc())
-#         .limit(n)
-#     )
-
-#     return result.scalars().all()
-
-
-# async def delete_expired_jwts(db: AsyncSession, UNIX_timestamp: int | float) -> None:
-# return await db.execute(
-#     delete(JWTTable)
-#     .where(JWTTable.expires_at < int(UNIX_timestamp))
-# )
