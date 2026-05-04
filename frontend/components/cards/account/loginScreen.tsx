@@ -166,7 +166,7 @@ export default function LoginScreen({ isOpen, onClose }: ExtendedActionButtonsPr
                   
                   <StyledInput 
                     icon="person-outline"
-                    placeholder="Username (unique)"
+                    placeholder="Username"
                     autoCapitalize="none"
                     value={formData.username}
                     onChangeText={(text: string) => handleChange("username", text)}
