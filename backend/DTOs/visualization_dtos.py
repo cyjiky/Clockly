@@ -132,11 +132,6 @@ class LineChartScheme(GenericModel, Generic[S]):
         return self
 
 
-# =============
-
-# =============
-
-
 class HeatMapScheme(BaseModel):
     heat_map: List[List[int]]
     type: Literal["tasks", "events", "both"]

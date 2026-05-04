@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MonthGridProps } from '@/constants/props/calendarProps';
 import { DAYS_OF_WEEK } from '@/constants/days';
 
-export default function MonthGrid({
+function MonthGrid({
   year = new Date().getFullYear(),
   month = new Date().getMonth() + 1,
   onDayPress,
@@ -64,3 +64,5 @@ export default function MonthGrid({
     </View>
   );
 }
+
+export default MonthGrid;
