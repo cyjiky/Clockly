@@ -7,41 +7,76 @@ from typing import AsyncGenerator, List
 from postgre import Events, Tasks
 from .calendar_service_shared import CoreServiceBaseSharedMethods
 
+from config import settings
+
 
 class ExportService(CoreServiceBaseSharedMethods):
     async def csv_historic_data_generator(
-        self, start_date: datetime, end_date: datetime
-    ) -> AsyncGenerator[None, str]:
+        self, user_id: str, start_date: datetime, end_date: datetime
+    ) -> AsyncGenerator[str, None]:
         yield "id,name,descriprion,start_date,ent_date,full_day,calendar_id,complited\n"
-        offset = 0
-        limit = 100  # TODO
+        limit = settings.export_chunks_size
 
         while True:
-            for i in await self._PostgreService.time_objects_range_generator(start_date, end_date):
-                row = f"{i['id']},{i['name']},{i['descriprion']},{i['start_date']},{i['ent_date']},{i['full_day']},{i['calendar_id']},{i['complited']}\n"
+            curr_chunk_counter = 0
+            curr_chunk_csv = ""
+            async for i in self._PostgreService.time_objects_range_generator(
+                start_date, end_date, user_id
+            ):
+                row = f"{i['id']},{i['name']},{i['descriprion']},{i['start_date']},{i['ent_date']},{i['full_day']},{i['calendar_id']},{i['complited']}\n" # TODO
+
+                curr_chunk_csv += curr_chunk_csv
+                curr_chunk_counter += 1
+
+                if curr_chunk_counter >= limit:
+                    yield curr_chunk_csv
+                    curr_chunk_csv = ""
+                    curr_chunk_counter = 0
+
                 yield row
 
-            offset += limit
+            break
+
+            if curr_chunk_csv:  # not empty check
+                yield curr_chunk_csv
+
 
     async def json_historic_data_generator(
-        self, start_date: datetime, end_date: datetime
-    ) -> AsyncGenerator[None, str]:
+        self, user_id: str, start_date: datetime, end_date: datetime
+    ) -> AsyncGenerator[str, None]:
         yield "[\n"
 
-        offset = 0
-        limit = 100
+        limit = settings.export_chunks_size
         is_first_record = True
 
         while True:
-            for record in await self._PostgreService.time_objects_range_generator(start_date, end_date):
-                json_str = json.dumps(record)
+            curr_chunk_counter = 0
+            curr_chunk_json = ""
+            async for (
+                record
+            ) in self._PostgreService.time_objects_range_generator(
+                start_date, end_date, user_id
+            ):
+                json_str = json.dumps(
+                    record
+                )  # TODO: convert to json export object via pydantic
 
                 if is_first_record:
-                    yield f"  {json_str}"
+                    curr_chunk_json += f"  {json_str}"
                     is_first_record = False
                 else:
-                    yield f",\n  {json_str}"
+                    curr_chunk_json += f",\n  {json_str}"
 
-            offset += limit
+                curr_chunk_counter += 1
+
+                if curr_chunk_counter >= limit:
+                    yield curr_chunk_json
+                    curr_chunk_json = ""
+                    curr_chunk_counter = 0
+
+            if curr_chunk_json:  # not empty check
+                yield curr_chunk_json
+
+            break
 
         yield "\n]"

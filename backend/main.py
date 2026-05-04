@@ -34,6 +34,7 @@ def hello_world() -> str:
 app.include_router(auth)
 app.include_router(calendar)
 app.include_router(chart)
+app.include_router(export)
 
 # For debugging
 if __name__ == "__main__":

@@ -1,9 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, update, or_, and_, union
+from sqlalchemy import select, delete, update, or_, union
 from postgre.models import *
 from app_types import BothTaskEventEnum, TimeLineEnum
 from datetime import datetime, time
-from utils import map_nearest_range
 
 from config import settings
 
@@ -197,7 +196,7 @@ class PostgreService:
             .values(calendar_id=None)
         )
 
-    async def time_objects_range_generator(self, start_date: datetime, end_date: datetime, user_id: str) -> AsyncGenerator[None, List[Events | Tasks]]:
+    async def time_objects_range_generator(self, start_date: datetime, end_date: datetime, user_id: str) -> AsyncGenerator[Events | Tasks, None]:
         events_stmt = (
             select(Events)
             .where(Events.user_id == user_id, Events.start_date <= end_date, Events.end_date <= start_date)
@@ -210,6 +209,6 @@ class PostgreService:
 
         full_stmt = union(events_stmt, tasks_stmt)
 
-        async with self.__sesion.stream_scalars(full_stmt) as result:
-            async for scalars in result:
-                yield scalars
+        result = await  self.__sesion.stream_scalars(full_stmt)
+        async for scalars in result:
+            yield scalars
