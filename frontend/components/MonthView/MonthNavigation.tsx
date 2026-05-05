@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import MonthGrid from './monthGrid';
+import MonthGrid from './MonthGrid';
 import { MONTHS } from '@/constants/days';
-import { MonthNavigationListProps } from '@/constants/props/calendarProps';
+import { MonthNavigationListProps } from "../../constants/props/calendarProps"
 
 export default function MonthNavigation({
   year = new Date().getFullYear(),

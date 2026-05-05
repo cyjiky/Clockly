@@ -5,7 +5,7 @@ from services import CoreServiceBase
 from DTOs import DayScheme
 from app_types import *
 
-from .calendar_shared_methods_service_base import CoreServiceBaseSharedMethods
+from .calendar_service_shared import CoreServiceBaseSharedMethods
 
 class VisualizationService(CoreServiceBaseSharedMethods):
     @staticmethod

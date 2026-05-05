@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import MonthNavigation from '@/components/MonthView/monthNavigation';
+import MonthNavigation from "components/MonthView/MonthNavigation"
 import CalendarNavbar from '@/components/navBar/calendarNavBar';
 
 export default function SearchButton() {
