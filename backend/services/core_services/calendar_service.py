@@ -28,8 +28,13 @@ class CalendarService(CoreServiceBaseSharedMethods):
 
     @staticmethod
     def _validate_start_end_date(
-        start_date: datetime, end_date: datetime
+        start_date: datetime, end_date: datetime, full_day: bool
     ) -> bool:
+        # if full day we don't need difference between start and end
+        # because we will null the timestamps
+        if full_day:
+            return start_date <= end_date
+        
         return (end_date - start_date) > timedelta(minutes=1)
 
     async def _define_calendar_id(
@@ -92,11 +97,13 @@ class CalendarService(CoreServiceBaseSharedMethods):
         object_data: TimeObjectScheme,
     ) -> None:
         if not self._validate_start_end_date(
-            start_date=object_data.start_date, end_date=object_data.end_date
+            start_date=object_data.start_date,
+            end_date=object_data.end_date,
+            full_day=object_data.fulL_day
         ):
             raise HTTPException(
                 status_code=400,
-                detail="Time object start date must be less than end date, at least one minute difference",
+                detail="Time object start date must be less than end date and at least one minute difference if full day options was chosen",
             )
 
         if (object_data.start_date.date != object_data.end_date.date) and object_data.fulL_day is False:

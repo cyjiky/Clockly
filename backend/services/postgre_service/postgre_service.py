@@ -196,19 +196,24 @@ class PostgreService:
             .values(calendar_id=None)
         )
 
-    async def time_objects_range_generator(self, start_date: datetime, end_date: datetime, user_id: str) -> AsyncGenerator[Events | Tasks, None]:
+    async def time_objects_range_generator(self, start_date: datetime, end_date: datetime, user_id: str) -> AsyncGenerator[Events | Tasks, None]:        
         events_stmt = (
             select(Events)
-            .where(Events.user_id == user_id, Events.start_date <= end_date, Events.end_date <= start_date)
+            .where(Events.user_id == user_id, Events.start_date <= end_date, Events.end_date >= start_date)
         ).execution_options(yield_per=100)
+
 
         tasks_stmt = (
-            select(Events)
-            .where(Events.user_id == user_id, Events.start_date <= end_date, Events.end_date <= start_date)
+            select(Tasks)
+            .where(Tasks.user_id == user_id, Tasks.start_date <= end_date, Tasks.end_date >= start_date)
         ).execution_options(yield_per=100)
 
-        full_stmt = union(events_stmt, tasks_stmt)
 
-        result = await  self.__sesion.stream_scalars(full_stmt)
-        async for scalars in result:
+        result_events = await self.__sesion.stream_scalars(events_stmt)
+        result_tasks = await self.__sesion.stream_scalars(tasks_stmt)
+
+        async for scalars in result_events:
+            yield scalars
+
+        async for scalars in result_tasks:
             yield scalars

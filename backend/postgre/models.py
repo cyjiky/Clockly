@@ -37,10 +37,10 @@ class Tasks(Base):  # - названия заметок
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     additional_description: Mapped[Optional[str]]
-    start_date: Mapped[datetime] = mapped_column()
-    end_date: Mapped[datetime] = mapped_column()
+    start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
-    full_day = Mapped[bool]
+    full_day: Mapped[bool]
 
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE")
@@ -67,7 +67,7 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=func.now())
     end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=func.now())
 
-    full_day = Mapped[bool]
+    full_day: Mapped[bool]
 
     compatibility: Mapped[bool] = mapped_column(default=True)
 

@@ -12,7 +12,7 @@ Execute in console to manually run postgres docker image
     docker run --name clockly_postgres_container
     -e POSTGRES_USER=database
     -e POSTGRES_PASSWORD=password
-    -e POSTGRES_DB=database
+    -e POSTGRES_DB=prod
     -p 5432:5432
     -d postgres
 """
@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     # app
     pagination: int = 30
     
-    export_chunks_size: int = 100
+    export_chunks_size: int = 2
 
     def get_postgres_dsn(self) -> PostgresDsn:
         """Returns postgresql DSN regarding to the app_mode variable"""

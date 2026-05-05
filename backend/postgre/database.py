@@ -30,7 +30,7 @@ async def get_async_engine(mode: AppRunningMode = settings.app_mode) -> AsyncEng
                     select(1)
                 )
             return local_engine
-        except SQLAlchemyError as e:
+        except (SQLAlchemyError, OSError) as e:
             if i == 0:
                 logger.error(msg="Connection to the db is failed on app startup", exc_info=e)
             print(f"№{i} Connection to the db failed, retrying...")
