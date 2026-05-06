@@ -150,7 +150,9 @@ async def get_tasks(
     calendar_service = await CalendarService.create(postgres_session)
     try:
         user = await merge_model(user_, postgres_session)
-        return await calendar_service.get_tasks(user_id=user.user_id, page=page)
+        return await calendar_service.get_tasks(
+            user_id=user.user_id, page=page
+        )
     except Exception as e:
         raise e from e
 
@@ -189,4 +191,3 @@ async def delete_calendar(
     except Exception as e:
         await calendar_service.close(commit=True)
         raise e from e
-

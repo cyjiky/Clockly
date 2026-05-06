@@ -28,8 +28,13 @@ class CalendarService(CoreServiceBaseSharedMethods):
 
     @staticmethod
     def _validate_start_end_date(
-        start_date: datetime, end_date: datetime
+        start_date: datetime, end_date: datetime, full_day: bool
     ) -> bool:
+        # if full day we don't need difference between start and end
+        # because we will null the timestamps
+        if full_day:
+            return start_date <= end_date
+
         return (end_date - start_date) > timedelta(minutes=1)
 
     async def _define_calendar_id(
@@ -40,6 +45,9 @@ class CalendarService(CoreServiceBaseSharedMethods):
                 await self._PostgreService.get_user_initial_calendar(user_id)
             )
             provided_calendar_id = initial_calendar.calendar_id
+
+        if not await self._PostgreService.get_calendar_by_id(user_id=user_id, calendar_id=provided_calendar_id):
+            raise HTTPException(status_code=400, detail="Invalid calendar id")
 
         return provided_calendar_id
 
@@ -92,17 +100,21 @@ class CalendarService(CoreServiceBaseSharedMethods):
         object_data: TimeObjectScheme,
     ) -> None:
         if not self._validate_start_end_date(
-            start_date=object_data.start_date, end_date=object_data.end_date
+            start_date=object_data.start_date,
+            end_date=object_data.end_date,
+            full_day=object_data.fulL_day,
         ):
             raise HTTPException(
                 status_code=400,
-                detail="Time object start date must be less than end date, at least one minute difference",
+                detail="Time object start date must be less than end date and at least one minute difference if full day options was chosen",
             )
 
-        if (object_data.start_date.date != object_data.end_date.date) and object_data.fulL_day is False:
+        if (
+            object_data.start_date.date != object_data.end_date.date
+        ) and object_data.fulL_day is False:
             raise HTTPException(
                 status_code=400,
-                detail="If time object start and end dates differc, must be set full day property"
+                detail="If time object start and end dates differc, must be set full day property",
             )
 
         # Prunning time parts since object duration is full day
@@ -116,7 +128,7 @@ class CalendarService(CoreServiceBaseSharedMethods):
             case TimeObjectsEnum.EVENT:
                 await self._create_event(
                     user_id=user_id, event_data=object_data
-                ) 
+                )
 
     async def create_calendar(
         self, user_id: str, calendar_data: CalendarCreate
@@ -259,24 +271,35 @@ class CalendarService(CoreServiceBaseSharedMethods):
                 task.completed = False
 
     # ----- TODO ------
+    
+    # Make sorted outputs (depends on frontend)
+    # Future - Tomorrow - Today - Yesterday - Past
 
-    async def get_tasks(self, user_id: str, page: int) -> List[Tasks]:
+    async def get_tasks(self, user_id: str, page: int) -> List[TaskSchemeOut]:
         """Page must greater or equal 0"""
-        if page <= 0:
+        if page < 0:
             raise HTTPException(
                 status_code=400, detail="Page must be greater or equal 0"
             )
-        try:
-            tasks = await self._PostgreService.get_tasks_by_userId(
-                user_id=user_id, page=page
-            )
-        except Exception as e:
-            raise HTTPException(status_code=404, detail="User or tasks not found")
-        
+
+        tasks = await self._PostgreService.get_tasks_by_userId(
+            user_id=user_id, page=page
+        )
+        print(tasks)
+
         return [
-                Tasks.model_validate(task, from_attributes=True)
-                for task in tasks
-            ]
+            TaskSchemeOut(
+                id=task.id,
+                name=task.name,
+                description=task.additional_description,
+                start_date=task.start_date,
+                end_date=task.end_date,
+                fulL_day=task.full_day,
+                calendar_id=task.calendar_id,
+                completed=task.completed,
+                calendar=CalendarScheme.model_validate(task.calendar, from_attributes=True)
+            ) for task in tasks
+        ]
 
     # -----------------
 

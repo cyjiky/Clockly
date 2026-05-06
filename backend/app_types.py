@@ -10,6 +10,7 @@ All Enums contain user-readable URL friendly values,
 it allows to use these Enums in endpoint PATH parameters
 """
 
+
 @unique
 class TimeLineEnum(Enum):
     DAY = "day"
@@ -21,15 +22,18 @@ class TimeLineEnum(Enum):
 @unique
 class ExtendedTimeLineEnum(Enum):
     """Compatible with TimeLineEnum"""
+
     DAY = "day"
     THREE_DAYS = "three-days"
     WEEK = "week"
     MONTH = "month"
     YEAR = "year"
 
+
 @unique
 class VisualizationTimeLineEnum(Enum):
     """Compatible with ExtendedTimeLineEnum and TimeLineEnum"""
+
     DAY = "day"
     CURRENT_WEEK = "week"
     MONTH = "month"
@@ -38,6 +42,7 @@ class VisualizationTimeLineEnum(Enum):
 @unique
 class HeatMapTimeLineEnum(Enum):
     """Compatible with ExtendedTimeLineEnum and TimeLineEnum"""
+
     MONTH = "month"
     YEAR = "year"
 

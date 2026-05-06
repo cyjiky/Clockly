@@ -10,6 +10,7 @@ from typing import TypeVar, List, AsyncGenerator
 
 M = TypeVar("M", bound=Base)
 
+
 class PostgreService:
     def __init__(self, session: AsyncSession):
         self.__sesion = session
@@ -47,7 +48,9 @@ class PostgreService:
         )
         return res.scalars().one_or_none()
 
-    async def get_tasks_by_userId(self, user_id: str, page: int) -> Tasks | None:
+    async def get_tasks_by_userId(
+        self, user_id: str, page: int
+    ) -> List[Tasks]:
         res = await self.__sesion.execute(
             select(Tasks)
             .where(Tasks.user_id == user_id)
@@ -55,6 +58,7 @@ class PostgreService:
             .offset(page * settings.pagination)
             .limit(settings.pagination)
         )
+
         return res.scalars().all()
 
     async def get_events_by_userId(
@@ -78,7 +82,10 @@ class PostgreService:
         return res.scalars().one_or_none()
 
     async def get_time_objects_by_date(
-        self, user_id: str, date: datetime, time_objects_type: BothTaskEventEnum
+        self,
+        user_id: str,
+        date: datetime,
+        time_objects_type: BothTaskEventEnum,
     ) -> List[Tasks | Events]:
         if isinstance(date, datetime):
             date = date.date()
@@ -86,7 +93,9 @@ class PostgreService:
         start_day = datetime.combine(date, time.min)  # 00:00
         end_day = datetime.combine(date, time.max)  # 23:59
 
-        return await self.get_time_objects_by_range(user_id=user_id, start_date=start_day, end_date=end_day)
+        return await self.get_time_objects_by_range(
+            user_id=user_id, start_date=start_day, end_date=end_day
+        )
 
     async def get_user_initial_calendar(self, user_id: str) -> Calendars:
         res = await self.__sesion.execute(
@@ -131,62 +140,74 @@ class PostgreService:
         self, user_id: str, start_date: datetime, end_date: datetime
     ) -> List[Events | Tasks]:
 
-        # Events query
-        event_q = select(Events).where(
+        event_stmt = select(Events).where(
             Events.user_id == user_id,
-            or_(Events.end_date >= start_date, Events.start_date >= end_date)
+            Events.end_date >= start_date,
+            Events.start_date <= end_date,
         )
 
-        tasks_q = select(Tasks).where(
+        tasks_stmt = select(Tasks).where(
             Tasks.user_id == user_id,
-            or_(Tasks.end_date >= start_date, Tasks.start_date >= end_date)
+            Tasks.end_date >= start_date,
+            Tasks.start_date <= end_date,
         )
 
-        result_events = (await self.__sesion.execute(event_q)).scalars().all()
-        result_tasks = (await self.__sesion.execute(tasks_q)).scalars().all()
+        result_events = (
+            (await self.__sesion.execute(event_stmt)).scalars().all()
+        )
+        result_tasks = (
+            (await self.__sesion.execute(tasks_stmt)).scalars().all()
+        )
 
         return result_events + result_tasks
 
     async def delete_task(self, user_id: str, task_id: str) -> None:
-        await self.__sesion.execute(
-            delete(Tasks)
-            .where(Tasks.id == task_id)
-        )
+        await self.__sesion.execute(delete(Tasks).where(Tasks.id == task_id))
 
     async def delete_event(self, user_id: str, event_id: str) -> None:
         await self.__sesion.execute(
-            delete(Events)
-            .where(Events.id == event_id, Events.user_id == user_id)
+            delete(Events).where(
+                Events.id == event_id, Events.user_id == user_id
+            )
         )
 
     async def delete_calendar(self, user_id: str, calendar_id: str) -> None:
         """This function won't delete user's initial calendar"""
 
         await self.__sesion.execute(
-            delete(Calendars)
-            .where(
+            delete(Calendars).where(
                 Calendars.calendar_id == calendar_id,
                 Calendars.user_id == user_id,
-                Calendars.is_initial == False # Initial calendar must NOT be deleted
+                Calendars.is_initial
+                == False,  # Initial calendar must NOT be deleted
             )
         )
 
-    async def delete_calendar_time_objects(self, user_id: str, calendar_id: str) -> None:
+    async def delete_calendar_time_objects(
+        self, user_id: str, calendar_id: str
+    ) -> None:
         await self.__sesion.execute(
-            delete(Events)
-            .where(Events.user_id == user_id, Events.calendar_id == calendar_id)
+            delete(Events).where(
+                Events.user_id == user_id, Events.calendar_id == calendar_id
+            )
         )
 
         await self.__sesion.execute(
-            delete(Tasks)
-            .where(Tasks.user_id == user_id, Tasks.calendar_id == calendar_id)
+            delete(Tasks).where(
+                Tasks.user_id == user_id, Tasks.calendar_id == calendar_id
+            )
         )
 
-
-    async def remove_time_objects_calendar(self, user_id: str, calendar_id: str):
+    async def remove_time_objects_calendar(
+        self, user_id: str, calendar_id: str
+    ):
         await self.__sesion.execute(
-            update(Events.__table__) # https://stackoverflow.com/questions/2631935/sqlalchemy-a-better-way-for-update-with-declarative
-            .where(Events.user_id == user_id, Events.calendar_id == calendar_id)
+            update(
+                Events.__table__
+            )  # https://stackoverflow.com/questions/2631935/sqlalchemy-a-better-way-for-update-with-declarative
+            .where(
+                Events.user_id == user_id, Events.calendar_id == calendar_id
+            )
             .values(calendar_id=None)
         )
 
@@ -196,19 +217,30 @@ class PostgreService:
             .values(calendar_id=None)
         )
 
-    async def time_objects_range_generator(self, start_date: datetime, end_date: datetime, user_id: str) -> AsyncGenerator[Events | Tasks, None]:
+    async def time_objects_range_generator(
+        self, start_date: datetime, end_date: datetime, user_id: str
+    ) -> AsyncGenerator[Events | Tasks, None]:
         events_stmt = (
-            select(Events)
-            .where(Events.user_id == user_id, Events.start_date <= end_date, Events.end_date <= start_date)
+            select(Events).where(
+                Events.user_id == user_id,
+                Events.start_date <= end_date,
+                Events.end_date >= start_date,
+            )
         ).execution_options(yield_per=100)
 
         tasks_stmt = (
-            select(Events)
-            .where(Events.user_id == user_id, Events.start_date <= end_date, Events.end_date <= start_date)
+            select(Tasks).where(
+                Tasks.user_id == user_id,
+                Tasks.start_date <= end_date,
+                Tasks.end_date >= start_date,
+            )
         ).execution_options(yield_per=100)
 
-        full_stmt = union(events_stmt, tasks_stmt)
+        result_events = await self.__sesion.stream_scalars(events_stmt)
+        result_tasks = await self.__sesion.stream_scalars(tasks_stmt)
 
-        result = await  self.__sesion.stream_scalars(full_stmt)
-        async for scalars in result:
+        async for scalars in result_events:
+            yield scalars
+
+        async for scalars in result_tasks:
             yield scalars

@@ -19,20 +19,25 @@ from logger import logger
 engine: AsyncEngine = None
 
 
-async def get_async_engine(mode: AppRunningMode = settings.app_mode) -> AsyncEngine:
+async def get_async_engine(
+    mode: AppRunningMode = settings.app_mode,
+) -> AsyncEngine:
     print("Initializing engine")
 
     for i in range(10):
         try:
-            local_engine = create_async_engine(settings.get_postgres_dsn().unicode_string())
-            async with local_engine.connect() as conn: 
-                await conn.execute(
-                    select(1)
-                )
+            local_engine = create_async_engine(
+                settings.get_postgres_dsn().unicode_string()
+            )
+            async with local_engine.connect() as conn:
+                await conn.execute(select(1))
             return local_engine
-        except SQLAlchemyError as e:
+        except (SQLAlchemyError, OSError) as e:
             if i == 0:
-                logger.error(msg="Connection to the db is failed on app startup", exc_info=e)
+                logger.error(
+                    msg="Connection to the db is failed on app startup",
+                    exc_info=e,
+                )
             print(f"№{i} Connection to the db failed, retrying...")
             time.sleep(1)
 
