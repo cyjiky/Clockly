@@ -131,19 +131,20 @@ class PostgreService:
         self, user_id: str, start_date: datetime, end_date: datetime
     ) -> List[Events | Tasks]:
 
-        # Events query
-        event_q = select(Events).where(
+        event_stmt = select(Events).where(
             Events.user_id == user_id,
-            or_(Events.end_date >= start_date, Events.start_date >= end_date)
+            Events.end_date >= start_date,
+            Events.start_date <= end_date
         )
 
-        tasks_q = select(Tasks).where(
+        tasks_stmt = select(Tasks).where(
             Tasks.user_id == user_id,
-            or_(Tasks.end_date >= start_date, Tasks.start_date >= end_date)
+            Tasks.end_date >= start_date,
+            Tasks.start_date <= end_date
         )
 
-        result_events = (await self.__sesion.execute(event_q)).scalars().all()
-        result_tasks = (await self.__sesion.execute(tasks_q)).scalars().all()
+        result_events = (await self.__sesion.execute(event_stmt)).scalars().all()
+        result_tasks = (await self.__sesion.execute(tasks_stmt)).scalars().all()
 
         return result_events + result_tasks
 

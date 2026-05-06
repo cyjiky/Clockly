@@ -33,12 +33,11 @@ class Settings(BaseSettings):
     LOGGING_FORMAT: str = "%(levelname)s (%(asctime)s): %(message)s"
 
     # postgres
-    postgres_dsn_prod: PostgresDsn = "postgresql+asyncpg://database:password@localhost:5432/prod"
-    postgres_dsn_test: PostgresDsn = "postgresql+asyncpg://database:password@localhost:5432/test"
+    postgres_dsn_prod: PostgresDsn = Field(validation_alias="POSTGRES_DSN_PROD")
+    postgres_dsn_test: PostgresDsn = Field(validation_alias="POSTGRES_DSN_TEST")
 
     # app
     pagination: int = 30
-    
     export_chunks_size: int = 2
 
     def get_postgres_dsn(self) -> PostgresDsn:
