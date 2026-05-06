@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
-// import CreateEventCard from '@/components/cards/tasks/createEventCard';
+import CreateEventCard from '@/components/cards/tasks/createEventCard';
+
 
 export default function CalendarScreen() {
   return (
@@ -8,7 +9,7 @@ export default function CalendarScreen() {
             Tasks Page!
         </Text>
 
-        {/* <CreateEventCard /> */}
+        <CreateEventCard/>
     </View>
   );
 }

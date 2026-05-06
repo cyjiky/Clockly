@@ -64,3 +64,12 @@ export interface CalendarYearListProps {
   years?: number[];
   onMonthPress?: (month: number, year: number) => void;
 }
+
+// TODO 
+export interface CalendarNavbarProps {
+  year: string;
+//   onBackPress?: () => void;
+//   onViewTogglePress?: () => void;
+//   onSearchPress?: () => void;
+  onAddPress?: () => void;
+}
