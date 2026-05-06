@@ -46,6 +46,9 @@ class CalendarService(CoreServiceBaseSharedMethods):
             )
             provided_calendar_id = initial_calendar.calendar_id
 
+        if not await self._PostgreService.get_calendar_by_id(user_id=user_id, calendar_id=provided_calendar_id):
+            raise HTTPException(status_code=400, detail="Invalid calendar id")
+
         return provided_calendar_id
 
     async def _create_task(
@@ -268,24 +271,34 @@ class CalendarService(CoreServiceBaseSharedMethods):
                 task.completed = False
 
     # ----- TODO ------
+    
+    # Make sorted outputs (depends on frontend)
+    # Future - Tomorrow - Today - Yesterday - Past
 
-    async def get_tasks(self, user_id: str, page: int) -> List[Tasks]:
+    async def get_tasks(self, user_id: str, page: int) -> List[TaskSchemeOut]:
         """Page must greater or equal 0"""
-        if page <= 0:
+        if page < 0:
             raise HTTPException(
                 status_code=400, detail="Page must be greater or equal 0"
             )
-        try:
-            tasks = await self._PostgreService.get_tasks_by_userId(
-                user_id=user_id, page=page
-            )
-        except Exception as e:
-            raise HTTPException(
-                status_code=404, detail="User or tasks not found"
-            )
+
+        tasks = await self._PostgreService.get_tasks_by_userId(
+            user_id=user_id, page=page
+        )
+        print(tasks)
 
         return [
-            Tasks.model_validate(task, from_attributes=True) for task in tasks
+            TaskSchemeOut(
+                id=task.id,
+                name=task.name,
+                description=task.additional_description,
+                start_date=task.start_date,
+                end_date=task.end_date,
+                fulL_day=task.full_day,
+                calendar_id=task.calendar_id,
+                completed=task.completed,
+                calendar=CalendarScheme.model_validate(task.calendar, from_attributes=True)
+            ) for task in tasks
         ]
 
     # -----------------

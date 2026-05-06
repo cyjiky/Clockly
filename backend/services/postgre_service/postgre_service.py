@@ -50,7 +50,7 @@ class PostgreService:
 
     async def get_tasks_by_userId(
         self, user_id: str, page: int
-    ) -> Tasks | None:
+    ) -> List[Tasks]:
         res = await self.__sesion.execute(
             select(Tasks)
             .where(Tasks.user_id == user_id)
@@ -58,6 +58,7 @@ class PostgreService:
             .offset(page * settings.pagination)
             .limit(settings.pagination)
         )
+
         return res.scalars().all()
 
     async def get_events_by_userId(

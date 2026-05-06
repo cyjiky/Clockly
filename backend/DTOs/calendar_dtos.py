@@ -13,6 +13,7 @@ class CalendarScheme(CalendarCreate):
 
 
 class TimeObjectScheme(BaseModel):
+    id: str
     name: str
     description: Optional[str] = None
 

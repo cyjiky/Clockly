@@ -19,6 +19,7 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         if isinstance(object, Events):
             objects.events.append(
                 EventSchemeOut(
+                    id=object.id,
                     name=object.name,
                     description=object.additional_description,
                     start_date=object.start_date,
@@ -37,6 +38,7 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         else:
             objects.tasks.append(
                 TaskSchemeOut(
+                    id=object.id,
                     name=object.name,
                     description=object.additional_description,
                     start_date=object.start_date,
