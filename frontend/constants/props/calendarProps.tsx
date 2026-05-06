@@ -4,8 +4,8 @@ export interface CalendarCreateProps {
 }
 
 export interface TimeLineProps {
-    start_date: Date;
-    end_date: Date;
+    start_date: Date | null;
+    end_date: Date | null;
 }
 
 export interface DateTimeObjProps extends TimeLineProps {
