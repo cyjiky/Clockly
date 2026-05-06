@@ -21,9 +21,7 @@ class TimeObjectScheme(BaseModel):
 
     fulL_day: bool
 
-    calendar_id: Optional[
-        str
-    ] # If None, object will be assigned to user's
+    calendar_id: Optional[str]  # If None, object will be assigned to user's
     # initial Calendar on object creation
 
 

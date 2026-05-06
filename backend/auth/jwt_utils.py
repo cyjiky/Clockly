@@ -3,6 +3,7 @@ from DTOs import JWTPayload
 
 from config import settings
 
+
 def prepare_jwt(jwt_string: str) -> str:
     return jwt_string.removeprefix("Bearer ")
 

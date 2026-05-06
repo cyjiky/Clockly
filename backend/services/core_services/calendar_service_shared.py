@@ -8,49 +8,51 @@ from utils import map_nearest_range, get_amount_of_month_days
 from datetime import datetime, timedelta, timezone
 from copy import copy
 
-from postgre import Tasks, Events, Users
+from postgre import Tasks, Events
 
 
 class CoreServiceBaseSharedMethods(CoreServiceBase):
     @staticmethod
-    def _append_correct_time_object(objects: BothScheme, object: Events | Tasks) -> None:
-            if isinstance(object, Events):
-                objects.events.append(
-                    EventSchemeOut(
-                        name=object.name,
-                        description=object.additional_description,
-                        start_date=object.start_date,
-                        end_date=object.end_date,
-                        fulL_day=object.full_day,
-                        calendar=(
-                            CalendarScheme.model_validate(
-                                object.calendar, from_attributes=True
-                            )
-                            if object.calendar
-                            else None
-                        ),
-                        calendar_id=object.calendar_id
-                    )
+    def _append_correct_time_object(
+        objects: BothScheme, object: Events | Tasks
+    ) -> None:
+        if isinstance(object, Events):
+            objects.events.append(
+                EventSchemeOut(
+                    name=object.name,
+                    description=object.additional_description,
+                    start_date=object.start_date,
+                    end_date=object.end_date,
+                    fulL_day=object.full_day,
+                    calendar=(
+                        CalendarScheme.model_validate(
+                            object.calendar, from_attributes=True
+                        )
+                        if object.calendar
+                        else None
+                    ),
+                    calendar_id=object.calendar_id,
                 )
-            else:
-                objects.tasks.append(
-                    TaskSchemeOut(
-                        name=object.name,
-                        description=object.additional_description,
-                        start_date=object.start_date,
-                        end_date=object.end_date,
-                        fulL_day=object.full_day,
-                        calendar=(
-                            CalendarScheme.model_validate(
-                                object.calendar, from_attributes=True
-                            )
-                            if object.calendar
-                            else None
-                        ),
-                        calendar_id=object.calendar_id,
-                        completed=object.completed
-                    )
+            )
+        else:
+            objects.tasks.append(
+                TaskSchemeOut(
+                    name=object.name,
+                    description=object.additional_description,
+                    start_date=object.start_date,
+                    end_date=object.end_date,
+                    fulL_day=object.full_day,
+                    calendar=(
+                        CalendarScheme.model_validate(
+                            object.calendar, from_attributes=True
+                        )
+                        if object.calendar
+                        else None
+                    ),
+                    calendar_id=object.calendar_id,
+                    completed=object.completed,
                 )
+            )
 
     async def get_data_by_range(
         self,
@@ -61,7 +63,9 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         data_range: ExtendedTimeLineEnum,
     ) -> ObjectsRangeData:
 
-        curr_datetime = datetime(year=year, month=month, day=day, tzinfo=timezone.utc)
+        curr_datetime = datetime(
+            year=year, month=month, day=day, tzinfo=timezone.utc
+        )
 
         start_date, end_date = map_nearest_range(
             date=curr_datetime, timerange=data_range
@@ -74,7 +78,9 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         curr_month_days = get_amount_of_month_days(year=year, month=month)
 
         # Tuple[int, int] -> year, month, day
-        out_days: List[Tuple[int, int, int]] = [(start_date.year, start_date.month, start_date.day)]
+        out_days: List[Tuple[int, int, int]] = [
+            (start_date.year, start_date.month, start_date.day)
+        ]
         loop_range = (end_date - start_date).days + 1
 
         # TODO
@@ -83,10 +89,14 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         next_month_day = 1
         for i in range(loop_range):
             if start_date.day + i > curr_month_days:
-                out_days.append((start_date.year, start_date.month+1, next_month_day))
+                out_days.append(
+                    (start_date.year, start_date.month + 1, next_month_day)
+                )
                 next_month_day += 1
             else:
-                out_days.append((start_date.year, start_date.month, start_date.day + i))
+                out_days.append(
+                    (start_date.year, start_date.month, start_date.day + i)
+                )
 
         # Tuple[int, int] -> year, month, day
         objects_by_days: Dict[Tuple[int, int, int], BothScheme] = dict(
@@ -97,34 +107,46 @@ class CoreServiceBaseSharedMethods(CoreServiceBase):
         _2_digit_days_in_range: List[Tuple[int, int, int]] = []
 
         start_date_temp = copy(start_date)
-        print(start_date_temp)
         while start_date_temp <= end_date:
-            print("adding", start_date_temp, end_date)
-            _2_digit_days_in_range.append((start_date_temp.year, start_date_temp.month, start_date_temp.day))
+            _2_digit_days_in_range.append(
+                (
+                    start_date_temp.year,
+                    start_date_temp.month,
+                    start_date_temp.day,
+                )
+            )
             start_date_temp += timedelta(days=1)
 
-        for object in objects:  
-            print("iterating over object")
+        for object in objects:
             if object.full_day:
-                print("object start", object.start_date)
-                print("actual start", start_date)
-
                 actual_start = max(object.start_date, start_date)
                 actual_end = min(object.end_date, end_date)
 
                 for date_tuple in _2_digit_days_in_range:
-                    print(datetime(year=date_tuple[0], month=date_tuple[1], day=date_tuple[2], tzinfo=timezone.utc))
-                    print(actual_end, actual_end)
-                    if actual_start <= datetime(year=date_tuple[0], month=date_tuple[1], day=date_tuple[2], tzinfo=timezone.utc) <= actual_end:
+                    if (
+                        actual_start
+                        <= datetime(
+                            year=date_tuple[0],
+                            month=date_tuple[1],
+                            day=date_tuple[2],
+                            tzinfo=timezone.utc,
+                        )
+                        <= actual_end
+                    ):
                         day_object = objects_by_days.get(date_tuple)
                         self._append_correct_time_object(day_object, object)
 
             else:
                 object_start_date = object.start_date
-                day_object = objects_by_days.get((object_start_date.year, object_start_date.month, object_start_date.day))
+                day_object = objects_by_days.get(
+                    (
+                        object_start_date.year,
+                        object_start_date.month,
+                        object_start_date.day,
+                    )
+                )
                 self._append_correct_time_object(day_object, object)
-        for date_tuple, objects in objects_by_days.items():
-            print(date_tuple, objects)
+
         return ObjectsRangeData(
             month=curr_datetime.month,
             year=curr_datetime.year,

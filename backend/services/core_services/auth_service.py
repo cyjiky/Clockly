@@ -68,11 +68,11 @@ class AuthService(CoreServiceBase):
                 detail="Such user doesn't exist, try to register first.",
             )
 
-        if not check_password(entered_pass=creds.password, hashed_pass=potential_user.password_hash):
-            raise HTTPException(
-                status_code=401,
-                detail="Unauthorized"
-            )
+        if not check_password(
+            entered_pass=creds.password,
+            hashed_pass=potential_user.password_hash,
+        ):
+            raise HTTPException(status_code=401, detail="Unauthorized")
 
         return self._generate_auth_tokens(new_user_id=potential_user.user_id)
 
@@ -116,7 +116,7 @@ class AuthService(CoreServiceBase):
             color="#4361EE",
             is_initial=True,
             user_id=new_user_id,
-            scoring=True
+            scoring=True,
         )
 
         await self._PostgreService.flush_models(new_user, initial_calendar)

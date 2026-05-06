@@ -34,7 +34,7 @@ class CalendarService(CoreServiceBaseSharedMethods):
         # because we will null the timestamps
         if full_day:
             return start_date <= end_date
-        
+
         return (end_date - start_date) > timedelta(minutes=1)
 
     async def _define_calendar_id(
@@ -99,17 +99,19 @@ class CalendarService(CoreServiceBaseSharedMethods):
         if not self._validate_start_end_date(
             start_date=object_data.start_date,
             end_date=object_data.end_date,
-            full_day=object_data.fulL_day
+            full_day=object_data.fulL_day,
         ):
             raise HTTPException(
                 status_code=400,
                 detail="Time object start date must be less than end date and at least one minute difference if full day options was chosen",
             )
 
-        if (object_data.start_date.date != object_data.end_date.date) and object_data.fulL_day is False:
+        if (
+            object_data.start_date.date != object_data.end_date.date
+        ) and object_data.fulL_day is False:
             raise HTTPException(
                 status_code=400,
-                detail="If time object start and end dates differc, must be set full day property"
+                detail="If time object start and end dates differc, must be set full day property",
             )
 
         # Prunning time parts since object duration is full day
@@ -123,7 +125,7 @@ class CalendarService(CoreServiceBaseSharedMethods):
             case TimeObjectsEnum.EVENT:
                 await self._create_event(
                     user_id=user_id, event_data=object_data
-                ) 
+                )
 
     async def create_calendar(
         self, user_id: str, calendar_data: CalendarCreate
@@ -278,12 +280,13 @@ class CalendarService(CoreServiceBaseSharedMethods):
                 user_id=user_id, page=page
             )
         except Exception as e:
-            raise HTTPException(status_code=404, detail="User or tasks not found")
-        
+            raise HTTPException(
+                status_code=404, detail="User or tasks not found"
+            )
+
         return [
-                Tasks.model_validate(task, from_attributes=True)
-                for task in tasks
-            ]
+            Tasks.model_validate(task, from_attributes=True) for task in tasks
+        ]
 
     # -----------------
 

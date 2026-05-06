@@ -31,6 +31,7 @@ class Users(Base):
     def __repr__(self) -> str:
         return f"User:{self.user_id=}:{self.username=}"
 
+
 class Tasks(Base):  # - названия заметок
     __tablename__ = "tasks"
 
@@ -64,8 +65,12 @@ class Events(Base):  # - задачи (к заметкам дополнител�
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     additional_description: Mapped[Optional[str]]
-    start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=func.now())
-    end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=func.now())
+    start_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), insert_default=func.now()
+    )
+    end_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), insert_default=func.now()
+    )
 
     full_day: Mapped[bool]
 

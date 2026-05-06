@@ -19,11 +19,14 @@ Execute in console to manually run postgres docker image
 
 # TODO: refactor for best practices
 
+
 class Settings(BaseSettings):
     app_mode: AppRunningMode = "prod"
 
     # auth
-    jwt_secret: str = Field(validation_alias="JWT_SECRET_KEY") # will be imported from .env
+    jwt_secret: str = Field(
+        validation_alias="JWT_SECRET_KEY"
+    )  # will be imported from .env
     access_jwt_expiry_seconds: int = 3600
     refresh_jwt_expiry_seconds: int = 172800
 
@@ -33,8 +36,12 @@ class Settings(BaseSettings):
     LOGGING_FORMAT: str = "%(levelname)s (%(asctime)s): %(message)s"
 
     # postgres
-    postgres_dsn_prod: PostgresDsn = Field(validation_alias="POSTGRES_DSN_PROD")
-    postgres_dsn_test: PostgresDsn = Field(validation_alias="POSTGRES_DSN_TEST")
+    postgres_dsn_prod: PostgresDsn = Field(
+        validation_alias="POSTGRES_DSN_PROD"
+    )
+    postgres_dsn_test: PostgresDsn = Field(
+        validation_alias="POSTGRES_DSN_TEST"
+    )
 
     # app
     pagination: int = 30
@@ -43,7 +50,7 @@ class Settings(BaseSettings):
     def get_postgres_dsn(self) -> PostgresDsn:
         """Returns postgresql DSN regarding to the app_mode variable"""
 
-        match self.app_mode: 
+        match self.app_mode:
             case "prod":
                 return self.postgres_dsn_prod
             case "test":

@@ -39,7 +39,7 @@ class ExportService(CoreServiceBaseSharedMethods):
                     curr_chunk_csv = ""
                     curr_chunk_counter = 0
 
-                    await asyncio.sleep(1) # for realistic delay
+                    await asyncio.sleep(1)  # for realistic delay
 
             break
 
@@ -92,7 +92,7 @@ class ExportService(CoreServiceBaseSharedMethods):
                     curr_chunk_json = ""
                     curr_chunk_counter = 0
 
-                    await asyncio.sleep(0.2) # for realistic delay
+                    await asyncio.sleep(0.2)  # for realistic delay
 
             if curr_chunk_json:  # not empty check
                 yield curr_chunk_json
