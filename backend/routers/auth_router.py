@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import AuthService
-from postgre import get_session_depends
-from DTOs import LoginBody, RegisterBody, JWTsResponse
+from postgre import get_session_depends, merge_model, Users
+from DTOs import LoginBody, RegisterBody, JWTsResponse, AccessResponse
+from auth.auth_utils import authorize_private_endpoint_via_refresh
 
 auth = APIRouter()
 
@@ -36,6 +37,18 @@ async def register(
     except Exception as e:
         await auth_service.close(commit=False)
         raise e from e
+
+
+@auth.post("/refresh")
+async def refresh(
+    user_: Users = Depends(
+        authorize_private_endpoint_via_refresh
+    ),
+    postgres_session: AsyncSession = Depends(get_session_depends),
+) -> AccessResponse:
+    auth_service: AuthService = await AuthService.create(postgres_session)
+    user = await merge_model(user_, postgres_session)
+    return await auth_service.refresh(user_id=user.user_id)
 
 
 # Disabled
