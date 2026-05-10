@@ -10,8 +10,7 @@ from jwt.exceptions import PyJWKError
 # Bcrypt - UnicodeEncodeError, UnicodeDecodeError
 
 
-def endpoint_exception_handler(func):
-
+def endpoint_exception_logger(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         try:

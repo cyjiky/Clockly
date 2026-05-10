@@ -1,12 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from sqlalchemy.ext.asyncio import AsyncEngine
 import uvicorn
 
 from contextlib import asynccontextmanager
+from typing import Any
 
 from routers import *
 from postgre import initialize_models, get_async_engine, Base
-
+from exceptions_handler import endpoint_exception_logger
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,9 +25,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
 app.get("/")
-
-
 def hello_world() -> str:
     return "Hello World!"
 

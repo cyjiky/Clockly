@@ -6,11 +6,13 @@ from DTOs import *
 from postgre import Users, get_session_depends, merge_model
 from auth.auth_utils import authorize_private_endpoint
 from services import CalendarService
+from exceptions_handler import endpoint_exception_logger
 
 calendar = APIRouter()
 
 
 @calendar.get("/object/{year}/{month}/{day}/{data_range}")
+@endpoint_exception_logger
 async def get_data_by_range(
     year: int,
     month: int,
@@ -37,6 +39,7 @@ async def get_data_by_range(
 
 
 @calendar.post("/object/{time_object_type}")
+@endpoint_exception_logger
 async def create_time_object(
     time_object_type: TimeObjectsEnum,
     time_object_data: TimeObjectScheme,
@@ -59,6 +62,7 @@ async def create_time_object(
 
 
 @calendar.patch("/object/{time_object_type}/{object_id}")
+@endpoint_exception_logger
 async def update_object(
     time_object_type: TimeObjectsEnum,
     object_id: str,
@@ -82,6 +86,7 @@ async def update_object(
 
 
 @calendar.post("/object/{time_object_type}/delete/{object_id}")
+@endpoint_exception_logger
 async def delete_object(
     time_object_type: TimeObjectsEnum,
     object_id: str,
@@ -103,6 +108,7 @@ async def delete_object(
 
 
 @calendar.post("/calendar")
+@endpoint_exception_logger
 async def create_calendar(
     calendar_data: CalendarCreate,
     user_: Users = Depends(authorize_private_endpoint),
@@ -123,6 +129,7 @@ async def create_calendar(
 
 
 @calendar.post("/task/{task_id}/{action}")
+@endpoint_exception_logger
 async def task_action(
     task_id: str,
     action: TaskActionEnum,
@@ -142,6 +149,7 @@ async def task_action(
 
 
 @calendar.get("/task/{page}")
+@endpoint_exception_logger
 async def get_tasks(
     page: int = Path(..., ge=0.0),
     user_: Users = Depends(authorize_private_endpoint),
@@ -158,6 +166,7 @@ async def get_tasks(
 
 
 @calendar.get("/calendar")
+@endpoint_exception_logger
 async def get_calendars(
     user_: Users = Depends(authorize_private_endpoint),
     postgres_session: AsyncSession = Depends(get_session_depends),
@@ -174,6 +183,7 @@ async def get_calendars(
 
 
 @calendar.delete("/calendar/{calendar_id}")
+@endpoint_exception_logger
 async def delete_calendar(
     calendar_id: str,
     deletion_option: DeletionOptions = DeletionOptions.SET_NULL,
@@ -185,7 +195,7 @@ async def delete_calendar(
     try:
         user = await merge_model(user_, postgres_session)
         await calendar_service.delete_calendar(
-            user_id=user.user_id, calendar_id=calendar_id
+            user_id=user.user_id, calendar_id=calendar_id, deletion_option=delete_calendar
         )
         await calendar_service.close(commit=True)
     except Exception as e:
