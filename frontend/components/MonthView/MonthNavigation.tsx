@@ -12,7 +12,7 @@ export default function MonthNavigation({
 
   return (
     <ScrollView 
-      className="flex-1 w-full bg-white"
+      className="flex-1 w-full "
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 24 }}
     >

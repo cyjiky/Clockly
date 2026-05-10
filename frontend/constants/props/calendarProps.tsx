@@ -50,26 +50,31 @@ export interface YearProps {
 }
 
 export interface MonthGridProps {
-  year?: number;
-  month?: number;
-  onDayPress?: (day: number) => void;
+    year?: number;
+    month?: number;
+    onDayPress?: (day: number) => void;
 }
 
 export interface MonthNavigationListProps {
-  year?: number;
-  onDayPress?: (day: number, month: number, year: number) => void;
+    year?: number;
+    onDayPress?: (day: number, month: number, year: number) => void;
 }
 
 export interface CalendarYearListProps {
-  years?: number[];
-  onMonthPress?: (month: number, year: number) => void;
+    years?: number[];
+    onMonthPress?: (month: number, year: number) => void;
 }
 
 // TODO 
 export interface CalendarNavbarProps {
-  year: string;
-//   onBackPress?: () => void;
-//   onViewTogglePress?: () => void;
-//   onSearchPress?: () => void;
-  onAddPress?: () => void;
+    year: string;
+    // onBackPress?: () => void;
+    // onViewTogglePress?: () => void;
+    // onSearchPress?: () => void;
+    onAddPress?: () => void;
+}
+
+export interface CalendarScreenProps {
+    onNavigateToEventCard?: () => void;
+    onNavigateToChangeCard?: () => void;
 }

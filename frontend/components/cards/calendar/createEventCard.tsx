@@ -18,8 +18,6 @@ import {
   Switch
 } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons'; 
-
 import { API_URL } from "@/constants/api";
 import type { EventProps } from "@/constants/props/calendarProps";
 
@@ -137,13 +135,6 @@ export default function CreateEventCard({ isOpen, onClose }: ExtendedActionButto
                     </View>
                 )}
 
-              <TouchableOpacity 
-                onPress={handleClose} 
-                className="absolute top-5 right-5 z-20 bg-slate-100 p-2 rounded-full active:bg-slate-200"
-              >
-                <Ionicons name="close" size={20} color="#64748b" />
-              </TouchableOpacity>
-
               <ScrollView 
                 contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40, paddingTop: Platform.OS === 'web' ? 40 : 20 }} 
                 showsVerticalScrollIndicator={false}
@@ -151,7 +142,7 @@ export default function CreateEventCard({ isOpen, onClose }: ExtendedActionButto
               >
                 
                 <View className="flex-row justify-between items-center px-5 pt-3 pb-4">
-                    <TouchableOpacity activeOpacity={0.7}>
+                    <TouchableOpacity activeOpacity={0.7} onPress={handleClose} >
                         <Text className="text-[#007AFF] text-lg">Cancel</Text>
                     </TouchableOpacity>
 
