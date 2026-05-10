@@ -57,15 +57,15 @@ class TaskEnum(Enum):
 
 @unique
 class BothTaskEventEnum(Enum):
-    TASK = "TASK"
-    EVENT = "EVENT"
-    BOTH = "BOTH"
+    TASK = "task"
+    EVENT = "event"
+    BOTH = "both"
 
 
 @unique
 class TimeObjectsEnum(Enum):
-    TASK = "Task"
-    EVENT = "Event"
+    TASK = "task"
+    EVENT = "event"
 
 
 @unique

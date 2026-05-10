@@ -6,11 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services import *
 from postgre import get_session_depends, Users, merge_model
 from auth.auth_utils import authorize_private_endpoint
+from exceptions_handler import endpoint_exception_logger
 
 export = APIRouter()
 
 
 @export.get("/export/csv")
+@endpoint_exception_logger
 async def csv_export_data(
     start_data: datetime,
     end_date: datetime,
@@ -32,6 +34,7 @@ async def csv_export_data(
 
 
 @export.get("/export/json")
+@endpoint_exception_logger
 async def json_export_data(
     start_data: datetime,
     end_date: datetime,

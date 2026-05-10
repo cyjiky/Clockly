@@ -1,9 +1,9 @@
 from fastapi import HTTPException
 
 from uuid import uuid4
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-from DTOs import LoginBody, RegisterBody, JWTPayload, JWTsResponse
+from DTOs import LoginBody, RegisterBody, JWTPayload, JWTsResponse, AccessResponse
 from auth import *
 from services import CoreServiceBase
 from utils import validate_email, validate_password
@@ -11,42 +11,57 @@ from postgre import Users, Calendars
 
 from config import settings
 
-
 class AuthService(CoreServiceBase):
-    def _generate_auth_tokens(self, new_user_id: str):
-        access_jwt_expiry = datetime.now() + timedelta(
-            seconds=settings.access_jwt_expiry_seconds
-        )
-        access_jwt_payload = JWTPayload(
-            user_id=new_user_id,
-            issued_at=datetime.now(),
-            expires_at=access_jwt_expiry,
-        )
-
-        refresh_jwt_expiry = datetime.now() + timedelta(
+    def _generate_auth_tokens(self, user_id: str):
+        refresh_jwt_expiry = datetime.now(tz=timezone.utc) + timedelta(
             seconds=settings.refresh_jwt_expiry_seconds
         )
         refresh_jwt_payload = JWTPayload(
-            user_id=new_user_id,
-            issued_at=datetime.now(),
+            user_id=user_id,
+            issued_at=datetime.now(tz=timezone.utc),
             expires_at=refresh_jwt_expiry,
+            token_type="refresh"
         )
 
-        access_jwt = generate_jwt(access_jwt_payload)
         refresh_jwt = generate_jwt(refresh_jwt_payload)
 
+        access_jwt_data = self._generate_new_access(user_id=user_id)
+
         return JWTsResponse(
-            access_token=access_jwt,
-            access_token_expiry=access_jwt_expiry,
+            access_token=access_jwt_data.access_token,
+            access_token_expiry=access_jwt_data.access_token_expiry,
             refresh_token=refresh_jwt,
             refresh_token_expiry=refresh_jwt_expiry,
         )
 
-    async def authorize_request_jwt_and_return_user(self, jwt: str) -> Users:
+    def _generate_new_access(self, user_id: str) -> AccessResponse:
+        access_jwt_expiry = datetime.now(tz=timezone.utc) + timedelta(
+            seconds=settings.access_jwt_expiry_seconds
+        )
+        access_jwt_payload = JWTPayload(
+            user_id=user_id,
+            issued_at=datetime.now(tz=timezone.utc),
+            expires_at=access_jwt_expiry,
+            token_type="access"
+        )  
+        access_jwt = generate_jwt(access_jwt_payload)
+
+        return AccessResponse(
+            access_token=access_jwt,
+            access_token_expiry=access_jwt_expiry
+        )      
+
+    async def authorize_request_jwt_and_return_user(self, jwt: str, accept_access: bool = True) -> Users:
         """Raise 401 on failed authorization"""
 
         prepared_jwt = prepare_jwt(jwt_string=jwt)
         jwt_payload = extract_jwt_payload(jwt_string=prepared_jwt)
+
+        if jwt_payload.token_type == "access" or not jwt.startswith("Bearer "):
+            raise HTTPException(status_code=400, detail="Bad token")
+
+        if datetime.now(tz=timezone.utc) >= jwt_payload.expires_at:
+            raise HTTPException(status_code=401, detail="Unauthorized")
 
         user = await self._PostgreService.get_user_by_id(
             user_id=jwt_payload.user_id
@@ -74,7 +89,7 @@ class AuthService(CoreServiceBase):
         ):
             raise HTTPException(status_code=401, detail="Unauthorized")
 
-        return self._generate_auth_tokens(new_user_id=potential_user.user_id)
+        return self._generate_auth_tokens(user_id=potential_user.user_id)
 
     async def register(self, creds: RegisterBody) -> JWTsResponse:
         if not validate_email(creds.email):
@@ -121,12 +136,15 @@ class AuthService(CoreServiceBase):
 
         await self._PostgreService.flush_models(new_user, initial_calendar)
 
-        return self._generate_auth_tokens(new_user_id=new_user_id)
+        return self._generate_auth_tokens(user_id=new_user_id)
 
+    async def refresh(self, user_id: str) -> AccessResponse:
+        return self._generate_new_access(user_id=user_id)
+        
     async def logout(self):
         pass
 
-    async def change_username(self):
+    async def change_username(self, user: Users):
         pass
 
     async def change_password(self):

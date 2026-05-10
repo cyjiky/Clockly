@@ -22,8 +22,6 @@ engine: AsyncEngine = None
 async def get_async_engine(
     mode: AppRunningMode = settings.app_mode,
 ) -> AsyncEngine:
-    print("Initializing engine")
-
     for i in range(10):
         try:
             local_engine = create_async_engine(
