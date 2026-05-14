@@ -28,18 +28,18 @@
 📁.
  ├── 📁 backend
  ├── 📁 frontend
- |    ├── 📁 app                    сердце приложения
- |    |    ├── 📁 tabs              основные элементы
- |    |    |    ├── 📝 _layout.tsx  вид иконок (табов)
- |    |    |    └── 📝 index.tsx    экран первой вкладки
- |    |    ├── 📝 _layout.tsx       корневой макет
- |    |    └── 📝 modal.tsx         экран модельного окна
- |    ├── 📁 assets                 ресурсы (фото/видео)
- |    ├── 📁 components             UI-элементы
- |    |    ├── 📁 buttons           кнопки ui
- |    |    └── 📁 ui                мелкие ui компоненты
- |    ├── 📁 constants              настройки и параметры (цвет, шрифт)
- |    ├── 📁 hooks                  хуки для виз компонентов
+ |    ├── 📁 app                    
+ |    |    ├── 📁 tabs              
+ |    |    |    ├── 📝 _layout.tsx  
+ |    |    |    └── 📝 index.tsx    
+ |    |    ├── 📝 _layout.tsx       
+ |    |    └── 📝 modal.tsx         
+ |    ├── 📁 assets                 
+ |    ├── 📁 components             
+ |    |    ├── 📁 buttons           
+ |    |    └── 📁 ui                
+ |    ├── 📁 constants              
+ |    ├── 📁 hooks                  
  |    ├── 📝 package.json
  |    ├── ⚙️ .env
  |    ├── ⚙️ .gitignore
