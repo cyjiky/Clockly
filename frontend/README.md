@@ -1,51 +1,51 @@
 # Welcome to frontend 👋
+> Requiring Node.js >= 16.0
+
+This is frontend side of the Clockly application
 
 ## Get started
 
 1. Install dependencies
 
    ```bash
-   npm install
+   npm install 
    ```
 
 2. Start the app
 
-3. ```bash
-   npx expo start
-
-   <!-- or  -->
-
+   ```bash
    npx expo start -c
 
    <!-- or  -->
 
    npx expo start --tunnel
+
    ```
 
 ## Stucture
 
 ```text
-📁.
- ├── 📁 backend
- ├── 📁 frontend
- |    ├── 📁 app                    
- |    |    ├── 📁 tabs              
- |    |    |    ├── 📝 _layout.tsx  
- |    |    |    └── 📝 index.tsx    
- |    |    ├── 📝 _layout.tsx       
- |    |    └── 📝 modal.tsx         
- |    ├── 📁 assets                 
- |    ├── 📁 components             
- |    |    ├── 📁 buttons           
- |    |    └── 📁 ui                
- |    ├── 📁 constants              
- |    ├── 📁 hooks                  
- |    ├── 📝 package.json
- |    ├── ⚙️ .env
- |    ├── ⚙️ .gitignore
- |    └── 🐳 Containerfile
- └── 📍README.md
+📁.                                 project folder
+ ├── 📁 backend                     server-side logic
+ ├── 📁 frontend                    client-side application
+ |    ├── 📁 app                    application routing & pages
+ |    ├── 📁 assets                 static files
+ |    ├── 📁 components             reusable UI elements
+ |    ├── 📁 constants              global constants & configurations
+ |    ├── 📁 hooks                  custom state & lifecycle hooks
+ |    ├── 📝 package.json           dependencies & scripts
+ |    ├── 📍README.md               frontend description
+ |    └── 🐳 Containerfile          container build
+ ├── 🐳 compose.yaml                docker compose orchestration
+ ├── 📄LICENCE                      LICENCE
+ └── 📝README.md                    project description
 ```
+
+
+## Access the frontend
+
+- Base URL: <http://127.0.0.1:8081>
+
 
 In the output, you'll find options to open the app in a
 
@@ -54,11 +54,6 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
 ## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
-
 - [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
