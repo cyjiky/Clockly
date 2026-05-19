@@ -1,7 +1,7 @@
 [project]
 name = "clockly-backend"
 version = "0.1"
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 dependencies = [
     "fastapi==0.105.0",
     "uvicorn==0.35.0",

@@ -31,10 +31,10 @@ class Settings(BaseSettings):
     access_jwt_expiry_seconds: int = 3600
     refresh_jwt_expiry_seconds: int = 172800
 
-    oauth_secret = Field(
+    oauth_secret: str = Field(
         validation_alias="OAUTH_SECRET"
     ) # .env aliased from OAUTH_SECRET
-    oauth_client_id = Field(
+    oauth_client_id: str = Field(
         validation_alias="OAUTH_CLIENT_ID"
     )
 
