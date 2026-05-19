@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import AuthService
@@ -50,8 +50,29 @@ async def refresh(
     postgres_session: AsyncSession = Depends(get_session_depends),
 ) -> AccessResponse:
     auth_service: AuthService = await AuthService.create(postgres_session)
-    user = await merge_model(user_, postgres_session)
-    return await auth_service.refresh(user_id=user.user_id)
+    try:
+        user = await merge_model(user_, postgres_session)
+        out = await auth_service.refresh(user_id=user.user_id)
+        await auth_service.close(commit=True)
+        return out
+    except Exception as e:
+        await auth_service.close(commit=False)
+        raise e from e
+
+@auth.post("/google/oauth")
+async def oauth_google(
+    code: str = Body(),
+    postgres_session: AsyncSession = Depends(get_session_depends)
+) -> AccessResponse:
+    auth_service: AuthService = await AuthService.create(postgres_session)
+    try:
+        out = await auth_service.google_oauth(code=code)
+        await auth_service.close(commit=True)
+        return out
+    except Exception as e:
+        await auth_service.close(commit=False)
+        raise e from e
+
 
 
 # Disabled
