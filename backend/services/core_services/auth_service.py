@@ -8,6 +8,7 @@ from auth import *
 from services import CoreServiceBase
 from utils import validate_email, validate_password
 from postgre import Users, Calendars
+from aiohttp import ClientSession
 
 from config import settings
 
@@ -137,6 +138,24 @@ class AuthService(CoreServiceBase):
         await self._PostgreService.flush_models(new_user, initial_calendar)
 
         return self._generate_auth_tokens(user_id=new_user_id)
+
+    async def google_oauth(self, code: str) -> AccessResponse:
+        async with ClientSession() as aio_http_client:
+            google_response = aio_http_client.post(
+                url="https://oauth2.googleapis.com/token",
+                data={
+                    "client_id": settings.oauth_client_id,
+                    "client_secret": settings.oauth_secret,
+                    "grant_type": "authorization_code",
+                    "code": code
+                }
+            )
+
+
+            
+
+
+
 
     async def refresh(self, user_id: str) -> AccessResponse:
         return self._generate_new_access(user_id=user_id)

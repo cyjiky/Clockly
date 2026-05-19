@@ -6,7 +6,7 @@ logger = logging.getLogger(settings.logger_name)
 logging.basicConfig(
     filename=settings.logging_filename,
     format=settings.LOGGING_FORMAT,
-    level=logging.INFO,
+    level=settings.log_level
 )
 
 if __name__ == "__main__":

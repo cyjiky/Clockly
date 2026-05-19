@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 from app_types import AppRunningMode
 
 from dotenv import load_dotenv
+from typing import Literal
 
 load_dotenv()
 
@@ -26,14 +27,23 @@ class Settings(BaseSettings):
     # auth
     jwt_secret: str = Field(
         validation_alias="JWT_SECRET_KEY"
-    )  # will be imported from .env
+    )  # .env aliased from JWT_SECRET_KEY
     access_jwt_expiry_seconds: int = 3600
     refresh_jwt_expiry_seconds: int = 172800
+
+    oauth_secret = Field(
+        validation_alias="OAUTH_SECRET"
+    ) # .env aliased from OAUTH_SECRET
+    oauth_client_id = Field(
+        validation_alias="OAUTH_CLIENT_ID"
+    )
 
     # logging
     logging_filename: str = "logs.log"
     logger_name: str = "clockly_logger"
     LOGGING_FORMAT: str = "%(levelname)s (%(asctime)s): %(message)s"
+
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(validation_alias="LOG_LEVEL")
 
     # postgres
     postgres_dsn_prod: PostgresDsn = Field(
