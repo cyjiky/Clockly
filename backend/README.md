@@ -30,7 +30,7 @@ cd backend
 ├── 📝 config.py                  project configuration via Pydantic
 ├── 📝 exceptions_handler.py      decorator for handling exceptions
 ├── 📝 app_types.py               special project typing
-├── ⚙️ .env.example               environment variables example (excluded from git)
+├── ⚙️ .env.example               environment variables example
 ├── ⚙️ .gitignore                 vcs ignore
 ├── 🐳 Containerfile              backend container build
 └── 📝 pyproject.toml             python dependencies & config
