@@ -6,7 +6,38 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+import { Platform } from 'react-native';
+
 export default function TabLayout() {
+
+  if (Platform.OS === 'ios') {
+    return (
+      <NativeTabs>
+
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+        <Icon sf="house.fill" drawable="custom_android_drawable" />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="calendar">
+        <Label>Calendar</Label>
+        <Icon sf="calendar" drawable="custom_android_drawable" />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="tasks">
+        <Label>Tasks</Label>
+        <Icon sf="checkmark.circle" drawable="custom_android_drawable" />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="account">
+        <Label>Account</Label>
+        <Icon sf="person.fill" drawable="custom_android_drawable" />
+      </NativeTabs.Trigger>
+
+    </NativeTabs>
+    );
+  }
 
   return (
     <Tabs>
