@@ -58,11 +58,7 @@ frontend:
  |    ├── 📁 app                    application routing & pages
  |    ├── 📁 assets                 static files
  |    ├── 📁 components             reusable UI elements
- |    |    ├── 📁 buttons           buttons components
- |    |    ├── 📁 cards             cards components
- |    |    └── 📁 navBar            navigation bar
  |    ├── 📁 constants              global constants & configurations
- |    |    └── 📁 props             component's props
  |    ├── 📁 hooks                  themes controllers
  |    ├── ⚙️ .env.example           environment variables example
  |    ├── 📝 package.json           dependencies & scripts

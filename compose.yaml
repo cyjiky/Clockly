@@ -32,7 +32,9 @@ services:
     command:
       # Exclusive (if you use ngrok):
       # sh -c "npm install -g @expo/ngrok && npx expo start --tunnel"
-      npx expo start --tunnel
+      npx expo start --lan --clear
+      # Exclusive (for local development):
+      # npx expo start --web --clear
     stdin_open: true 
     tty: true
   db: 
