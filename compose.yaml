@@ -6,7 +6,7 @@ services:
       context: ./backend
       dockerfile: Containerfile
     ports:
-      - 8000:8000
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     volumes:
       - ./backend:/app
     command: 
@@ -20,11 +20,11 @@ services:
       context: ./frontend
       dockerfile: Containerfile
     ports:
-      - 8081:8081
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
     depends_on:
       - backend 
     environment:
-      - BACKEND_URL=http://clockly-backend:8000
+      - BACKEND_URL=http://clockly-backend:${BACKEND_PORT}
       # - EXPO_TOKEN=${EXPO_TOKEN}
     volumes:
       - ./frontend:/app
@@ -32,7 +32,7 @@ services:
     command:
       # Exclusive (if you use ngrok):
       # sh -c "npm install -g @expo/ngrok && npx expo start --tunnel"
-      npx expo start --lan --clear
+      # npx expo start --lan --clear
       # Exclusive (for local development):
       # npx expo start --web --clear
     stdin_open: true 
@@ -44,11 +44,11 @@ services:
     env_file:
       - backend/.env
     environment:
-      - POSTGRES_DB=database 
-      - POSTGRES_USER=database
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=${POSTGRES_DB} 
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - 5432:5432
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
   db-ui:
     container_name: pgadmin4
     image: docker.io/dpage/pgadmin4:9
@@ -56,11 +56,11 @@ services:
       - db
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: pg_admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: pg_admin
-      POSTGRES_HOST: db
-      POSTGRES_DB: database
-      POSTGRES_USER: database
-      POSTGRES_PASSWORD: password
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      POSTGRES_HOST: clockly-db
+      POSTGRES_DB: ${POSTGRES_DB} 
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - 5050:80
+      - 5050:${PGADMING_PORT}
